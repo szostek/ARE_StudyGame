@@ -19,6 +19,8 @@ public class MultiCardController : MonoBehaviour
 
     public TapToMark imageToTapPrefab;
     private TapToMark imageToTap;
+    
+    public Sprite imageRef;
     public bool tappedOnCorrectArea;
     public bool hasTappedImage;
 
@@ -26,11 +28,13 @@ public class MultiCardController : MonoBehaviour
 
     [Header("UI References:")]
     [SerializeField] TMP_Text questionText;
-    [SerializeField] TMP_Text instructionText;
+    [SerializeField] TMP_Text instructionTextPrefab;
+    private TMP_Text instructionText;
     [SerializeField] TMP_Text descriptionText;
     [SerializeField] Button answerButtonPrefab;
     [SerializeField] TMP_InputField fillInBlankPrefab;
     private TMP_InputField answerTextField;
+    [SerializeField] Image imageRefPrefab;
     [SerializeField] Button submitButtonPrefab;
     [SerializeField] RectTransform content;
 
@@ -43,6 +47,7 @@ public class MultiCardController : MonoBehaviour
     private List<Button> selectedButtons = new List<Button>();
     private List<Button> allAnswerButtons = new List<Button>();
     private List<int> selectedAnswerList = new List<int>();
+    private string[] alphabet = new string[] {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"};
 
     private void Awake() 
     {
@@ -71,20 +76,41 @@ public class MultiCardController : MonoBehaviour
         selectedButtons.Clear();
         
         questionText.text = question;
-        instructionText.text = instructions;
+
         if (questionType == "isMultiChoice") {
+            if (imageRef != null) {
+                AddImageRefIfAvailable();
+            }
+            AddInstructionText();
             PopulateAnswerButtons();
             AddMultChoiceSubmitButton();
         } else if (questionType == "isFillInBlank") {
+            if (imageRef != null) {
+                AddImageRefIfAvailable();
+            }
+            AddInstructionText();
             answerTextField = Instantiate(fillInBlankPrefab, content);
             AddFillBlankSubmitButton();
         } else if (questionType == "isTapOnImage") {
             imageToTap = Instantiate(imageToTapPrefab, content);
             RectTransform rt = imageToTap.GetComponent<RectTransform>();
             rt.sizeDelta = new Vector2(rt.sizeDelta.x, 1000);
+            AddInstructionText();
             AddImageTapSubmitButton();
         }
 
+    }
+
+    public void AddInstructionText()
+    {
+        TMP_Text instruction = Instantiate(instructionTextPrefab, content);
+        instruction.text = instructions;
+    }
+
+    public void AddImageRefIfAvailable()
+    {
+        Image referenceImage = Instantiate(imageRefPrefab, content);
+        referenceImage.sprite = imageRef;
     }
 
     public void AddMultChoiceSubmitButton()
@@ -148,16 +174,22 @@ public class MultiCardController : MonoBehaviour
 
     private void FinishQuestion(bool success)
     {
-        if (success) {
-            descriptionText.text = description;
-            retryButton.gameObject.SetActive(false);
-            finishedPanel.SetActive(true);
-            correctAnimator.SetTrigger("show");
-            gameManager.AddPoints();
+        if (!gameManager.isChallengeMode) {
+            if (success) {
+                descriptionText.text = description;
+                retryButton.gameObject.SetActive(false);
+                finishedPanel.SetActive(true);
+                correctAnimator.SetTrigger("show");
+            } else {
+                descriptionText.text = "That's not quite correct.";
+                finishedPanel.SetActive(true);
+                wrongAnimator.SetTrigger("show");
+            }
         } else {
-            descriptionText.text = "That's not quite correct.";
-            finishedPanel.SetActive(true);
-            wrongAnimator.SetTrigger("show");
+            if (success) {
+                gameManager.AddPoints();
+            }
+            Next();
         }
     }
 
@@ -181,7 +213,7 @@ public class MultiCardController : MonoBehaviour
             AnswerButton buttonInfo = answerButton.GetComponent<AnswerButton>();
             buttonInfo.answerIndex = i;
             TMP_Text answerText = answerButton.GetComponentInChildren<TMP_Text>();
-            answerText.text = $"{i}. {answers[i]}";
+            answerText.text = $"{alphabet[i]}. {answers[i]}";
             
             // Add event listener to the button
             if (hasMultAnswers) 

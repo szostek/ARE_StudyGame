@@ -10,14 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6c919acd02414ab429d994d5537fd521, type: 3}
-  m_Name: Q003
+  m_Name: Q005
   m_EditorClassIdentifier: 
-  question: Who is the best doggie in da world?
-  description: Buzz is the coolest boy, we all know dat.
+  question: Morgan's butt smells like a meadow of beautiful flowers.
+  description: No, it certainly does not. :)
   answers:
-  - Buzz
-  correctAnswerIndicies: 00000000
-  instruction: 3
-  questionType: 1
+  - True
+  - False
+  correctAnswerIndicies: 01000000
+  instruction: 0
+  questionType: 0
   imageToTap: {fileID: 0}
-  imageRef: {fileID: 21300000, guid: fc0c254d27f1b27419555e4e7618f58d, type: 3}
+  imageRef: {fileID: 21300000, guid: 82bde4bd7d849f64fb40f8ddedf17754, type: 3}

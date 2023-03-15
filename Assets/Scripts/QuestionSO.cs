@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.UI;
 
 [CreateAssetMenu(menuName = "Test Question", fileName = "New Question")]
 
@@ -16,6 +17,7 @@ public class QuestionSO : ScriptableObject
     public InstructionTypes instruction;
     public QuestionType questionType;
     public TapToMark imageToTap;
+    public Sprite imageRef;
 
     public string GetQuestionType()
     {

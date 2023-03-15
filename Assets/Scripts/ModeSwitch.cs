@@ -72,6 +72,7 @@ public class ModeSwitch : MonoBehaviour
                 this.handleRectTransform.anchoredPosition = new Vector2(-moveXAmount, 0);
                 practicePanel.SetActive(true);
                 challengePanel.SetActive(false);
+                gameManager.isChallengeMode = false;
             }
             else
             {
@@ -79,6 +80,7 @@ public class ModeSwitch : MonoBehaviour
                 this.handleRectTransform.anchoredPosition = new Vector2(moveXAmount, 0);
                 practicePanel.SetActive(false);
                 challengePanel.SetActive(true);
+                gameManager.isChallengeMode = true;
             }
         }
         this.isOn = isOn;
