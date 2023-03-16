@@ -160,9 +160,15 @@ public class GameManager : MonoBehaviour
             questionCard.question = q.question;
             questionCard.description = q.description;
             questionCard.instructions = q.GetInstruction();
-            questionCard.answers = q.answers;
+            questionCard.hasImagesForAnswers = q.hasImageAnswers;
+            if (q.hasImageAnswers) {
+                questionCard.imgAnswers = q.imgAnswers;
+                questionCard.answerAmount = q.imgAnswers.Length;
+            } else {
+                questionCard.answers = q.answers;
+                questionCard.answerAmount = q.answers.Length;
+            }
             questionCard.correctAnswersList = q.correctAnswerIndicies;
-            questionCard.answerAmount = q.answers.Length;
             if (q.imageRef != null) {
                 questionCard.imageRef = q.imageRef;
             }

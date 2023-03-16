@@ -13,9 +13,11 @@ public class MultiCardController : MonoBehaviour
     public string instructions;
     public string description;
     public string[] answers;
+    public Sprite[] imgAnswers;
     public List<int> correctAnswersList = new List<int>();
     public int answerAmount;
     public bool hasMultAnswers;
+    public bool hasImagesForAnswers;
 
     public TapToMark imageToTapPrefab;
     private TapToMark imageToTap;
@@ -32,6 +34,7 @@ public class MultiCardController : MonoBehaviour
     private TMP_Text instructionText;
     [SerializeField] TMP_Text descriptionText;
     [SerializeField] Button answerButtonPrefab;
+    [SerializeField] Button imgAnswerButtonPrefab;
     [SerializeField] TMP_InputField fillInBlankPrefab;
     private TMP_InputField answerTextField;
     [SerializeField] Image imageRefPrefab;
@@ -208,12 +211,25 @@ public class MultiCardController : MonoBehaviour
     {
         for (int i = 0; i < answerAmount; i++) 
         {
-            Button answerButton = Instantiate(answerButtonPrefab, content);
-            allAnswerButtons.Add(answerButton);
-            AnswerButton buttonInfo = answerButton.GetComponent<AnswerButton>();
-            buttonInfo.answerIndex = i;
-            TMP_Text answerText = answerButton.GetComponentInChildren<TMP_Text>();
-            answerText.text = $"{alphabet[i]}. {answers[i]}";
+            Button answerButton;
+            AnswerButton buttonInfo;
+            TMP_Text answerText;
+            if (hasImagesForAnswers) {
+                answerButton = Instantiate(imgAnswerButtonPrefab, content);
+                allAnswerButtons.Add(answerButton);
+                buttonInfo = answerButton.GetComponent<AnswerButton>();
+                buttonInfo.answerIndex = i;
+                answerText = answerButton.GetComponentInChildren<TMP_Text>();
+                answerText.text = alphabet[i].ToString();
+                buttonInfo.answerImage.sprite = imgAnswers[i];
+            } else {
+                answerButton = Instantiate(answerButtonPrefab, content);
+                allAnswerButtons.Add(answerButton);
+                buttonInfo = answerButton.GetComponent<AnswerButton>();
+                buttonInfo.answerIndex = i;
+                answerText = answerButton.GetComponentInChildren<TMP_Text>();
+                answerText.text = $"{alphabet[i]}. {answers[i]}";
+            }
             
             // Add event listener to the button
             if (hasMultAnswers) 

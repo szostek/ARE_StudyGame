@@ -12,7 +12,9 @@ public class QuestionSO : ScriptableObject
     public string question = "Enter new question text here";
     [TextArea(2,6)]
     public string description = "More info about the correct answer..";
-    public string[] answers;
+    public bool hasImageAnswers;
+    public string[] answers; // Only text will be in the answer buttons
+    public Sprite[] imgAnswers; // Use when images should appear in the answer buttons
     public List<int> correctAnswerIndicies;
     public InstructionTypes instruction;
     public QuestionType questionType;
