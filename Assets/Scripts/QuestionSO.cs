@@ -8,6 +8,7 @@ using UnityEngine.UI;
 
 public class QuestionSO : ScriptableObject
 {
+    [HideInInspector] public int questionIndex;
     [TextArea(2,6)]
     public string question = "Enter new question text here";
     [TextArea(2,6)]

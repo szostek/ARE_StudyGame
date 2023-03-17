@@ -9,6 +9,7 @@ public class MultiCardController : MonoBehaviour
 {
     [Header("Info for spawning:")]
     public string questionType;
+    public int qIndex;
     public string question;
     public string instructions;
     public string description;
@@ -27,6 +28,7 @@ public class MultiCardController : MonoBehaviour
     public bool hasTappedImage;
 
     private GameManager gameManager;
+    private StatusController statusController;
 
     [Header("UI References:")]
     [SerializeField] TMP_Text questionText;
@@ -54,7 +56,8 @@ public class MultiCardController : MonoBehaviour
 
     private void Awake() 
     {
-        gameManager = FindObjectOfType<GameManager>();    
+        gameManager = FindObjectOfType<GameManager>();
+        statusController = FindObjectOfType<StatusController>();
     }
     private void Start() 
     {
@@ -191,6 +194,8 @@ public class MultiCardController : MonoBehaviour
         } else {
             if (success) {
                 gameManager.AddPoints();
+            } else {
+                statusController.AddQuestionToStruggleList(qIndex);
             }
             Next();
         }

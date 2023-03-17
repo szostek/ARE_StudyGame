@@ -12,16 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c919acd02414ab429d994d5537fd521, type: 3}
   m_Name: Q002
   m_EditorClassIdentifier: 
+  questionIndex: 1
   question: Which colors create purple?
   description: Red and blue, mixed together, make the color purple. Purple isn't
     technically a color, so whatever man.. it's still awesome.
+  hasImageAnswers: 0
   answers:
   - red
   - blue
   - green
+  imgAnswers: []
   correctAnswerIndicies: 0000000001000000
   instruction: 1
-  isMultiChoice: 1
-  isFillInBlank: 0
-  isTapOnImage: 0
-  isDragOnImage: 0
+  questionType: 0
+  imageToTap: {fileID: 0}
+  imageRef: {fileID: 0}

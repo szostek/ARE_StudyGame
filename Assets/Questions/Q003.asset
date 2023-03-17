@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c919acd02414ab429d994d5537fd521, type: 3}
   m_Name: Q003
   m_EditorClassIdentifier: 
+  questionIndex: 2
   question: Who is the best doggie in da world?
   description: Buzz is the coolest boy, we all know dat.
+  hasImageAnswers: 0
   answers:
   - Buzz
+  imgAnswers: []
   correctAnswerIndicies: 00000000
   instruction: 3
   questionType: 1

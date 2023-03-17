@@ -12,11 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c919acd02414ab429d994d5537fd521, type: 3}
   m_Name: Q004
   m_EditorClassIdentifier: 
+  questionIndex: 3
   question: Choose the kitchen on the floorplan below.
   description: Nice! The kitchen is the perfect place for lunch! Yum!
+  hasImageAnswers: 0
   answers: []
+  imgAnswers: []
   correctAnswerIndicies: 
   instruction: 4
   questionType: 2
   imageToTap: {fileID: 5140010603439549092, guid: 0447ae33729e1c0419b90b7bebed6423,
     type: 3}
+  imageRef: {fileID: 0}

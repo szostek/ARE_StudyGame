@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public float selectedTimeInterval;
     [SerializeField] TMP_Text numScoreText;
     [SerializeField] TMP_Text percentScoreText;
+    [SerializeField] TMP_Text timeScoreText;
     [SerializeField] TMP_Text encouragementText;
     private string[] encouragements = new string[] {
         "Progress over perfection!\nYou're doing great.",
@@ -32,13 +33,23 @@ public class GameManager : MonoBehaviour
     public List<QuestionSO> ppdQuestions;
     public List<QuestionSO> pddQuestions;
     public List<QuestionSO> ceQuestions;    
-    private List<QuestionSO> questionList = new List<QuestionSO>();
+    private List<QuestionSO> tempQuestionList = new List<QuestionSO>();
+    // totalQuestionList is used to assign index for each question, used by status panel:
+    private List<QuestionSO> totalQuestionList = new List<QuestionSO>();
 
     public TMP_Text timerText;
     private float timer;
+    private string currentTime;
     private bool readyForChallenge = false;
 
     private float totalPoints;
+    private StatusController statusController;
+
+    private void Awake() 
+    {
+        InitiateTotalQuestions();
+        statusController = GetComponent<StatusController>();
+    }
 
     public void StartGame()
     {
@@ -70,7 +81,8 @@ public class GameManager : MonoBehaviour
     {
         float minutes = Mathf.FloorToInt(timer / 60);
         float seconds = Mathf.FloorToInt(timer % 60);
-        timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        currentTime = string.Format("{0:00}:{1:00}", minutes, seconds);
+        timerText.text = currentTime;
     }
 
     public void StopGame()
@@ -78,12 +90,15 @@ public class GameManager : MonoBehaviour
         if (currentCard) Destroy(currentCard);
         inGameMenu.SetActive(false);
         if (isChallengeMode) {
-            numScoreText.text = $"{totalPoints}/{(int)selectedTimeInterval / 2}";
+            readyForChallenge = false;
+            string numScore = $"{totalPoints}/{(int)selectedTimeInterval / 2}";
+            numScoreText.text = numScore;
             float calcPercScore = Mathf.Round((totalPoints / (selectedTimeInterval / 2)) * 100);
             percentScoreText.text = $"{calcPercScore}%";
+            timeScoreText.text = currentTime;
             encouragementText.text = encouragements[Random.Range(0, encouragements.Length)];
+            statusController.SaveChallengeStats((int)selectedTimeInterval, numScore, $"{calcPercScore}%", currentTime);
             challengeCompletePanel.SetActive(true);
-            readyForChallenge = false;
         } else {
             practiceCompletePanel.SetActive(true);
         }
@@ -99,7 +114,7 @@ public class GameManager : MonoBehaviour
 
     public void Reset()
     {
-        questionList.Clear();
+        tempQuestionList.Clear();
         mainMenu.SetActive(true);
         totalPoints = 0;
     }
@@ -109,27 +124,27 @@ public class GameManager : MonoBehaviour
         foreach (int index in selectedCategories) {
             if (index == 0) {
                 foreach (QuestionSO q in pcmQuestions) {
-                    questionList.Add(q);
+                    tempQuestionList.Add(q);
                 }
             } else if (index == 1) {
                 foreach (QuestionSO q in pjmQuestions) {
-                    questionList.Add(q);
+                    tempQuestionList.Add(q);
                 }
             } else if (index == 2) {
                 foreach (QuestionSO q in paQuestions) {
-                    questionList.Add(q);
+                    tempQuestionList.Add(q);
                 }
             } else if (index == 3) {
                 foreach (QuestionSO q in ppdQuestions) {
-                    questionList.Add(q);
+                    tempQuestionList.Add(q);
                 }
             } else if (index == 4) {
                 foreach (QuestionSO q in pddQuestions) {
-                    questionList.Add(q);
+                    tempQuestionList.Add(q);
                 }
             } else if (index == 5) {
                 foreach (QuestionSO q in ceQuestions) {
-                    questionList.Add(q);
+                    tempQuestionList.Add(q);
                 }
             }
         }
@@ -140,22 +155,23 @@ public class GameManager : MonoBehaviour
 
     private void RandomizeAndTrimList()
     {
-        for (int i = 0; i < questionList.Count; i++) {
-            QuestionSO temp = questionList[i];
-            int randomIndex = Random.Range(i, questionList.Count);
-            questionList[i] = questionList[randomIndex];
-            questionList[randomIndex] = temp;
+        for (int i = 0; i < tempQuestionList.Count; i++) {
+            QuestionSO temp = tempQuestionList[i];
+            int randomIndex = Random.Range(i, tempQuestionList.Count);
+            tempQuestionList[i] = tempQuestionList[randomIndex];
+            tempQuestionList[randomIndex] = temp;
         }
-        for (int i = (int)selectedTimeInterval / 2; i < questionList.Count; i++) {
-            questionList.Remove(questionList[i]);
+        for (int i = ((int)selectedTimeInterval / 2) - 1; i < tempQuestionList.Count; i++) {
+            tempQuestionList.Remove(tempQuestionList[i]);
         }
     }
 
     public void CreateQuestion()
     {
-        if (questionList.Count > 0) {
-            QuestionSO q = questionList[Random.Range(0, questionList.Count)];
+        if (tempQuestionList.Count > 0) {
+            QuestionSO q = tempQuestionList[Random.Range(0, tempQuestionList.Count)];
             MultiCardController questionCard = Instantiate(multChoicePrefab, canvas);
+            questionCard.qIndex = q.questionIndex;
             questionCard.questionType = q.GetQuestionType();
             questionCard.question = q.question;
             questionCard.description = q.description;
@@ -178,7 +194,7 @@ public class GameManager : MonoBehaviour
             if (q.GetQuestionType() == "isTapOnImage") {
                 questionCard.imageToTapPrefab = q.imageToTap;
             }
-            questionList.Remove(q);
+            tempQuestionList.Remove(q);
             currentCard = questionCard.gameObject;
         } else {
             Debug.Log("No more questions available!");
@@ -193,6 +209,32 @@ public class GameManager : MonoBehaviour
     {
         totalPoints += 1;
         Debug.Log("Total Points: " + totalPoints);
+    }
+
+    public void InitiateTotalQuestions()
+    {
+        foreach (QuestionSO q in pcmQuestions) {
+            totalQuestionList.Add(q);
+        }
+        foreach (QuestionSO q in pjmQuestions) {
+            totalQuestionList.Add(q);
+        }
+        foreach (QuestionSO q in paQuestions) {
+            totalQuestionList.Add(q);
+        }
+        foreach (QuestionSO q in ppdQuestions) {
+            totalQuestionList.Add(q);
+        }
+        foreach (QuestionSO q in pddQuestions) {
+            totalQuestionList.Add(q);
+        }
+        foreach (QuestionSO q in ceQuestions) {
+            totalQuestionList.Add(q);
+        }
+        for (int i = 0; i < totalQuestionList.Count; i++) {
+            QuestionSO q = totalQuestionList[i];
+            q.questionIndex = i;
+        }            
     }
 
 

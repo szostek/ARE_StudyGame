@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c919acd02414ab429d994d5537fd521, type: 3}
   m_Name: Q005
   m_EditorClassIdentifier: 
+  questionIndex: 4
   question: Pick the coolest image...
   description: Good choice!
   hasImageAnswers: 1

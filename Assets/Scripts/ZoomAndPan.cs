@@ -17,6 +17,7 @@ public class ZoomAndPan : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
     private RectTransform rectTransform;
     private Vector2 lastTouchPosition;
     private int activeTouchCount;
+    private bool isZoomed = false;
 
     void Start()
     {
@@ -38,15 +39,20 @@ public class ZoomAndPan : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         #if UNITY_EDITOR
         if (Input.mouseScrollDelta.y != 0) return;
         #endif
-        
+
         if (Input.touchCount == 1 && activeTouchCount == 1)
         {
             Vector2 delta = eventData.position - lastTouchPosition;
-            rectTransform.anchoredPosition += delta;
+            if (isZoomed) {
+                rectTransform.anchoredPosition += delta;
+            } else {
+                rectTransform.anchoredPosition += new Vector2(rectTransform.anchoredPosition.x, delta.y);
+            }
             lastTouchPosition = eventData.position;
         }
         else if (Input.touchCount == 2)
         {
+            isZoomed = true;
             resetButton.gameObject.SetActive(true);
             scrollView.vertical = false;
 
@@ -82,6 +88,7 @@ public class ZoomAndPan : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         rectTransform.anchoredPosition = Vector2.zero;
         scrollView.vertical = true;
         resetButton.gameObject.SetActive(false);
+        isZoomed = false;
     }
 
 
