@@ -19,6 +19,7 @@ public class QuestionSO : ScriptableObject
     public List<int> correctAnswerIndicies;
     public InstructionTypes instruction;
     public QuestionType questionType;
+    public Categories questionCategory;
     public TapToMark imageToTap;
     public Sprite imageRef;
 
@@ -40,14 +41,21 @@ public enum InstructionTypes {
     chooseTrueOrFalse,
     fillInTheBlank,
     tapALocationOnTheImage,
-    dragAndPlaceAssetOnTheImage,
 }
 
 public enum QuestionType {
     isMultiChoice,
     isFillInBlank,
     isTapOnImage,
-    isDragOnImage,
+}
+
+public enum Categories {
+    pcm,
+    pjm,
+    pa,
+    ppd,
+    pdd,
+    ce,
 }
 
 public class QuestionCategories {

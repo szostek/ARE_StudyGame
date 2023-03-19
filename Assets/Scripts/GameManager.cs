@@ -97,7 +97,7 @@ public class GameManager : MonoBehaviour
             percentScoreText.text = $"{calcPercScore}%";
             timeScoreText.text = currentTime;
             encouragementText.text = encouragements[Random.Range(0, encouragements.Length)];
-            statusController.SaveChallengeStats((int)selectedTimeInterval, numScore, $"{calcPercScore}%", currentTime);
+            statusController.SaveChallengeStats((int)selectedTimeInterval, calcPercScore, currentTime);
             challengeCompletePanel.SetActive(true);
         } else {
             practiceCompletePanel.SetActive(true);
