@@ -237,5 +237,10 @@ public class GameManager : MonoBehaviour
         }            
     }
 
+    public int TotalQuestions()
+    {
+        return totalQuestionList.Count;
+    }
+
 
 }

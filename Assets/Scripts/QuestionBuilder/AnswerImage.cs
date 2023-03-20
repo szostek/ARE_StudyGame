@@ -12,9 +12,16 @@ public class AnswerImage : MonoBehaviour
     public Button deleteButton;
     [HideInInspector] public int fieldId;
     [HideInInspector] public AnswerFieldList answerFieldList;
+    [HideInInspector] public CameraManager cameraManager;
+    [HideInInspector] public GameManager gameManager;
 
     public void Delete()
     {
         answerFieldList.DeleteField(fieldId);
+    }
+
+    public void TakePhotoButton()
+    {
+
     }
 }

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class QBuilderManager : MonoBehaviour
 {
+    [HideInInspector] public int questionIndex;
     [HideInInspector] public int categoryIndex;
     [HideInInspector] public int typeIndex;
     [HideInInspector] public int instructionIndex;
@@ -14,7 +15,7 @@ public class QBuilderManager : MonoBehaviour
 
     [HideInInspector] public bool hasImageAnswers;
     [HideInInspector] public string[] textAnswers;
-    [HideInInspector] public string[] imageAnswerFilePaths;
+    [HideInInspector] public List<string> imageAnswerFilePaths;
     [HideInInspector] public int[] correctAnswerIds;
 
     // This get's called via the AnswerFieldList, when the Save Question button is hit:

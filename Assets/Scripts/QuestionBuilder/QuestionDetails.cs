@@ -8,14 +8,18 @@ public class QuestionDetails : MonoBehaviour
 {
     [SerializeField] TMP_InputField questionText;
     [SerializeField] TMP_InputField questionDetailsText;
-    [SerializeField] Image previewImage;
+    [SerializeField] RawImage previewImage;
     [SerializeField] Button nextButton;
 
     private QBuilderManager builderManager;
+    private CameraManager cameraManager;
+
+    [SerializeField] TMP_Text imagePath;
 
     private void Awake() 
     {
-        builderManager = GetComponent<QBuilderManager>();    
+        builderManager = GetComponent<QBuilderManager>();
+        cameraManager = GetComponent<CameraManager>();
     }
 
     private void Update() 
@@ -28,7 +32,16 @@ public class QuestionDetails : MonoBehaviour
         if (!string.IsNullOrEmpty(questionText.text)) {
             builderManager.questionText = questionText.text;
             builderManager.questionDetailsText = questionDetailsText.text;
-            builderManager.refImageFilePath = "Need to save path to image here";
+
+            List<string> refimagePaths = cameraManager.SavePictures();
+            if (refimagePaths.Count > 0) {
+                builderManager.refImageFilePath = refimagePaths[0];
+            }
         }
+    }
+
+    public void TakePhotoButton()
+    {
+        cameraManager.TakePicture(512, previewImage, 666);
     }
 }

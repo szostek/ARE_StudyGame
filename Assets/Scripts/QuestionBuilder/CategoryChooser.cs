@@ -14,6 +14,7 @@ public class CategoryChooser : MonoBehaviour
     private int selectedId = -1;
 
     private QBuilderManager builderManager;
+    public GameManager gameManager;
 
     private string[] acronyms = new string[] {"PcM", "PjM", "PA", "PPD", "PDD", "CE"};
     private string[] titles = new string[] 
@@ -57,6 +58,7 @@ public class CategoryChooser : MonoBehaviour
     public void NextButton()
     {
         builderManager.categoryIndex = selectedId;
+        builderManager.questionIndex = gameManager.TotalQuestions() + 1;
     }
 
 }

@@ -22,10 +22,14 @@ public class AnswerFieldList : MonoBehaviour
     private bool hasImageAnswers = false;
 
     private QBuilderManager builderManager;
+    private CameraManager cameraManager;
+    private GameManager gameManager;
 
     private void Awake() 
     {
-        builderManager = GetComponent<QBuilderManager>();    
+        builderManager = GetComponent<QBuilderManager>();
+        cameraManager = GetComponent<CameraManager>();
+        gameManager = FindObjectOfType<GameManager>();
     }
 
     private void Update() 
@@ -73,6 +77,8 @@ public class AnswerFieldList : MonoBehaviour
     {
         AnswerImage field = Instantiate(answerImagePrefab, answerFieldList);
         field.answerFieldList = this;
+        field.cameraManager = cameraManager;
+        field.gameManager = gameManager;
         imageFieldsList.Add(field);
         ApplyFieldIds();    
     }
