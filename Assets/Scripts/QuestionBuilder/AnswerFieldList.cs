@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,13 +11,17 @@ public class AnswerFieldList : MonoBehaviour
     [SerializeField] GameObject addFieldButtonPrefab;
     private GameObject currentAddFieldButton;
     [SerializeField] Switch answerTypeSwitch;
-
     public RectTransform answerFieldList;
+
+    // Card is used for question preview. Show this before saving question:
+    [SerializeField] MultiCardController previewCardPrefab;
+    [SerializeField] RectTransform canvas;
+
     [HideInInspector] public List<AnswerField> textFieldsList = new List<AnswerField>();
     [HideInInspector] public List<AnswerImage> imageFieldsList = new List<AnswerImage>();
     private string[] textAnswers;
     private string[] imageAnswerfilePaths;
-    private int[] correctAnswerIds;
+    private List<int> correctAnswerIds;
 
     private bool toggled = false;
     private bool hasImageAnswers = false;
@@ -35,16 +40,17 @@ public class AnswerFieldList : MonoBehaviour
     private void Update() 
     {
         if (!answerTypeSwitch.isOn && !toggled) {
+            hasImageAnswers = false;
             imageFieldsList.Clear();
+            cameraManager.RemoveAllTempImages();
             AddTextFieldAnswers();
             toggled = true;
-            hasImageAnswers = false;
         }
         if (answerTypeSwitch.isOn && toggled) {
+            hasImageAnswers = true;
             textFieldsList.Clear();
             AddImageAnswers();
             toggled = false;
-            hasImageAnswers = true;
         }
 
     }
@@ -55,6 +61,7 @@ public class AnswerFieldList : MonoBehaviour
         for (int i = 0; i < 2; i++) {
             AddTextFieldItem();
         }
+        ApplyFieldIds();
         AddNewAnswerButton();
     }
     private void AddImageAnswers()
@@ -63,6 +70,7 @@ public class AnswerFieldList : MonoBehaviour
         for (int i = 0; i < 2; i++) {
             AddImageFieldItem();
         }
+        ApplyFieldIds();
         AddNewAnswerButton();
     }
 
@@ -71,7 +79,7 @@ public class AnswerFieldList : MonoBehaviour
         AnswerField field = Instantiate(answerFieldPrefab, answerFieldList);
         field.answerFieldList = this;
         textFieldsList.Add(field);
-        ApplyFieldIds();
+        
     }
     private void AddImageFieldItem()
     {
@@ -79,8 +87,7 @@ public class AnswerFieldList : MonoBehaviour
         field.answerFieldList = this;
         field.cameraManager = cameraManager;
         field.gameManager = gameManager;
-        imageFieldsList.Add(field);
-        ApplyFieldIds();    
+        imageFieldsList.Add(field);  
     }
 
     private void AddNewAnswerButton() //Adds the Add Answer button to end of list
@@ -97,21 +104,19 @@ public class AnswerFieldList : MonoBehaviour
             AddNewAnswerButton();
         });
         currentAddFieldButton = addFieldButton;
+        ApplyFieldIds();
     }
 
     public void ApplyFieldIds() //Re-sorts the ids of all current buttons
     {
         if (hasImageAnswers) {
-            if (imageFieldsList.Count > 0) {
-                for (int i = 0; i < imageFieldsList.Count; i++) {
-                    imageFieldsList[i].fieldId = i;
-                }
+            for (int i = 0; i < imageFieldsList.Count; i++) {
+                imageFieldsList[i].fieldId = i;
+                Debug.Log(i);
             }
         } else {
-            if (textFieldsList.Count > 0) {
-                for (int i = 0; i < textFieldsList.Count; i++) {
-                    textFieldsList[i].fieldId = i;
-                }
+            for (int i = 0; i < textFieldsList.Count; i++) {
+                textFieldsList[i].fieldId = i;
             }
         }
     }
@@ -136,23 +141,63 @@ public class AnswerFieldList : MonoBehaviour
         }
     }
 
+    // PUT THESE TWO FUNCTIONS IN THE QBuilderManager SCRIPT:
+    public void ShowPreviewCard()
+    {
+        MultiCardController previewCard = Instantiate(previewCardPrefab, canvas);
+        previewCard.questionType = builderManager.type;
+        previewCard.hasImagesForAnswers = hasImageAnswers;
+        previewCard.qIndex = gameManager.TotalQuestions() + 1;
+        previewCard.question = builderManager.questionText;
+        previewCard.instructions = builderManager.instruction;
+        previewCard.correctAnswersList = builderManager.correctAnswerIds;
+        if (hasImageAnswers) {
+            Sprite[] images = new Sprite[cameraManager.tempImagePaths.Count];
+            for (int i = 0; i < cameraManager.tempImagePaths.Count; i++) {
+                images[i] = cameraManager.LoadImageFromPath(cameraManager.tempImagePaths[i]);
+            }
+            previewCard.imgAnswers = images;
+            previewCard.answerAmount = images.Length;
+        } else {
+            textAnswers = new string[textFieldsList.Count];
+            for (int i = 0; i < textFieldsList.Count; i++) {
+                textAnswers[i] = textFieldsList[i].answerTextField.text;
+            }
+            previewCard.answers = textAnswers;
+            previewCard.answerAmount = textAnswers.Length;
+        }
+        if (!string.IsNullOrEmpty(builderManager.refImageFilePath)) {
+            previewCard.imageRef = cameraManager.LoadImageFromPath(builderManager.refImageFilePath);
+        }
+    }
+
     public void SaveQuestionButton()
     {
         if (hasImageAnswers) {
             builderManager.hasImageAnswers = true;
-
+            correctAnswerIds = new List<int>();
+            List<string> refimagePaths = cameraManager.SavePictures();
+            if (refimagePaths.Count > 0) {
+                builderManager.imageAnswerFilePaths = refimagePaths;
+            }
+            for (int i = 0; i < imageFieldsList.Count; i++) {
+                correctAnswerIds.Add(imageFieldsList[i].correctAnswerToggle.isOn ? 1: 0);
+            }
+            builderManager.correctAnswerIds = correctAnswerIds;
+            builderManager.SaveQuestion();
         } else {
             builderManager.hasImageAnswers = false;
             textAnswers = new string[textFieldsList.Count];
-            correctAnswerIds = new int[textFieldsList.Count];
+            correctAnswerIds = new List<int>();
             for (int i = 0; i < textFieldsList.Count; i++) {
                 textAnswers[i] = textFieldsList[i].answerTextField.text;
-                correctAnswerIds[i] = textFieldsList[i].correctAnswerToggle.isOn ? 1 : 0;
+                correctAnswerIds.Add(textFieldsList[i].correctAnswerToggle.isOn ? 1 : 0);
             }
             builderManager.textAnswers = textAnswers;
             builderManager.correctAnswerIds = correctAnswerIds;
             builderManager.SaveQuestion();
         }
     }
+
 
 }

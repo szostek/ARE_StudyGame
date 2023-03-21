@@ -272,9 +272,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: CategoryList, Assembly-CSharp
-        m_MethodName: NextButton
+      - m_Target: {fileID: 8178458451107517874}
+        m_TargetAssemblyTypeName: AnswerImage, Assembly-CSharp
+        m_MethodName: TakePhotoButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -283,18 +283,6 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
         m_CallState: 2
 --- !u!114 &1742119733392380545
 MonoBehaviour:
@@ -813,13 +801,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6601171649aa0204f8bb1376142042dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  previewImage: {fileID: 0}
+  previewImage: {fileID: 3040065489143585360}
   correctAnswerToggle: {fileID: 8178458451199018716}
   takePhotoButton: {fileID: 1742119733392380546}
   uploadPhotoButton: {fileID: 1742119733994857586}
   deleteButton: {fileID: 8178458450175721020}
   fieldId: 0
   answerFieldList: {fileID: 0}
+  cameraManager: {fileID: 0}
+  gameManager: {fileID: 0}
 --- !u!1 &8178458451199018718
 GameObject:
   m_ObjectHideFlags: 0

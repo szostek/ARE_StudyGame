@@ -6,8 +6,8 @@ public class QBuilderManager : MonoBehaviour
 {
     [HideInInspector] public int questionIndex;
     [HideInInspector] public int categoryIndex;
-    [HideInInspector] public int typeIndex;
-    [HideInInspector] public int instructionIndex;
+    [HideInInspector] public string type;
+    [HideInInspector] public string instruction;
 
     [HideInInspector] public string questionText;
     [HideInInspector] public string questionDetailsText;
@@ -16,14 +16,14 @@ public class QBuilderManager : MonoBehaviour
     [HideInInspector] public bool hasImageAnswers;
     [HideInInspector] public string[] textAnswers;
     [HideInInspector] public List<string> imageAnswerFilePaths;
-    [HideInInspector] public int[] correctAnswerIds;
+    [HideInInspector] public List<int> correctAnswerIds;
 
     // This get's called via the AnswerFieldList, when the Save Question button is hit:
     public void SaveQuestion()
     {
         Debug.Log("Category index: " + categoryIndex);
-        Debug.Log("Type index: " + typeIndex);
-        Debug.Log("instruction index: " + instructionIndex);
+        Debug.Log("Type: " + type);
+        Debug.Log("instruction: " + instruction);
         Debug.Log("question text: " + questionText);
         Debug.Log("Details text: " + questionDetailsText);
         Debug.Log("Ref image file path" + refImageFilePath);
@@ -37,5 +37,11 @@ public class QBuilderManager : MonoBehaviour
             correctIds += id.ToString() + ", ";
         }
         Debug.Log("correct ids: " + correctIds);
+
+        string imagePaths = "";
+        foreach (string path in imageAnswerFilePaths) {
+            imagePaths += path + ", ";
+        }
+        Debug.Log(imagePaths);
     }
 }

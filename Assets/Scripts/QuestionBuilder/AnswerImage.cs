@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class AnswerImage : MonoBehaviour
 {
-    public Image previewImage;
+    public RawImage previewImage;
     public Toggle correctAnswerToggle;
     public Button takePhotoButton;
     public Button uploadPhotoButton;
@@ -22,6 +22,6 @@ public class AnswerImage : MonoBehaviour
 
     public void TakePhotoButton()
     {
-
+        cameraManager.TakePicture(512, previewImage, fieldId);
     }
 }

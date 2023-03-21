@@ -4058,6 +4058,9 @@ MonoBehaviour:
     type: 3}
   answerTypeSwitch: {fileID: 164785682}
   answerFieldList: {fileID: 1066012976}
+  previewCardPrefab: {fileID: 3810610292922310520, guid: 397e9d4894f258e4a92a749a385a04f9,
+    type: 3}
+  canvas: {fileID: 751457208}
   textFieldsList: []
   imageFieldsList: []
 --- !u!114 &485973624
@@ -4075,7 +4078,7 @@ MonoBehaviour:
   questionIndex: 0
   categoryIndex: 0
   typeIndex: 0
-  instructionIndex: 0
+  instruction: 
   questionText: 
   questionDetailsText: 
   refImageFilePath: 
@@ -4112,6 +4115,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c02573da27814e41803fa6875ab2f41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tempImagePaths: []
 --- !u!1 &499754038
 GameObject:
   m_ObjectHideFlags: 0
@@ -4123,6 +4127,7 @@ GameObject:
   - component: {fileID: 499754039}
   - component: {fileID: 499754041}
   - component: {fileID: 499754042}
+  - component: {fileID: 499754043}
   m_Layer: 5
   m_Name: Image_Preview
   m_TagString: Untagged
@@ -4147,8 +4152,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -247.73596, y: 195.75581}
-  m_SizeDelta: {x: 456.9837, y: 335.5118}
+  m_AnchoredPosition: {x: -167, y: 195.75581}
+  m_SizeDelta: {x: 300, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &499754041
 CanvasRenderer:
@@ -4185,6 +4190,20 @@ MonoBehaviour:
     y: 0
     width: 1
     height: 1
+--- !u!114 &499754043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 499754038}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AspectMode: 1
+  m_AspectRatio: 1
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -5409,7 +5428,7 @@ GameObject:
   - component: {fileID: 639279011}
   - component: {fileID: 639279010}
   m_Layer: 5
-  m_Name: Button_SaveQuestion
+  m_Name: Button_PreviewQuestion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5497,7 +5516,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 485973623}
         m_TargetAssemblyTypeName: AnswerFieldList, Assembly-CSharp
-        m_MethodName: SaveQuestionButton
+        m_MethodName: ShowPreviewCard
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -9463,7 +9482,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.16357926}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 9.182617, y: -198.59337}
+  m_AnchoredPosition: {x: 9.182617, y: -198.59215}
   m_SizeDelta: {x: -73.635, y: 397.1847}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1066012977
@@ -10698,7 +10717,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Save Question
+  m_text: Preview
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

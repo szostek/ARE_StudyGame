@@ -17,7 +17,12 @@ public class TypeChooser : MonoBehaviour
         "Multiple Choice",
         "True / False",
         "Fill in the blank",
-        "Choose location on an image"
+        "Choose location on an image",
+    };
+    private string[] correctedTypes = new string[] {
+        "isMultiChoice",
+        "isFillInBlank",
+        "isTapOnImage",
     };
 
     private void Awake() 
@@ -34,16 +39,20 @@ public class TypeChooser : MonoBehaviour
             button.icon.sprite = icons[i];
             button.typeChooser = this;
         }
-        builderManager.instructionIndex = 0;
+        builderManager.instruction = instructionDropdown.options[instructionDropdown.value].text;
         instructionDropdown.onValueChanged.AddListener((int value) => {
-            builderManager.instructionIndex = value;
+            builderManager.instruction = instructionDropdown.options[instructionDropdown.value].text;
+            Debug.Log(builderManager.instruction);
         });
     }
 
     public void ChooseButton(int id)
     {
-        Debug.Log("Chosen type: " + questionTypes[id]);
-        builderManager.typeIndex = id;
+        int correctedId = id;
+        if (id == 1) {
+            correctedId = 0;
+        }
+        builderManager.type = correctedTypes[correctedId];
     }
 
 
