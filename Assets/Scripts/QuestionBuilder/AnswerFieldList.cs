@@ -164,6 +164,7 @@ public class AnswerFieldList : MonoBehaviour
                 }
             }
             builderManager.correctAnswerIds = correctAnswerIds;
+            builderManager.hasImageAnswers = true;
             previewCard.imgAnswers = images;
             previewCard.answerAmount = images.Length;
             previewCard.correctAnswersList = correctAnswerIds;

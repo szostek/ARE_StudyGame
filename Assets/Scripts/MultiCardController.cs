@@ -21,15 +21,17 @@ public class MultiCardController : MonoBehaviour
     public bool hasImagesForAnswers;
     [HideInInspector] public Sprite imageRef;
 
-    [HideInInspector] public TapToMark imageToTapPrefab;
+    public TapToMark imageToTapPrefab;
     [HideInInspector] private TapToMark imageToTap;
     
+    public string tapImagePath;
     public bool tappedOnCorrectArea;
     public bool hasTappedImage;
     public Vector2 correctTapLocation;
 
     private GameManager gameManager;
     private StatusController statusController;
+    private CameraManager cameraManager;
 
     [Header("UI References:")]
     [SerializeField] TMP_Text questionText;
@@ -66,6 +68,7 @@ public class MultiCardController : MonoBehaviour
         gameManager = FindObjectOfType<GameManager>();
         statusController = FindObjectOfType<StatusController>();
         builderManager = FindObjectOfType<QBuilderManager>();
+        cameraManager = FindObjectOfType<CameraManager>();
     }
 
     private void Start() 
@@ -117,6 +120,10 @@ public class MultiCardController : MonoBehaviour
             imageToTap = Instantiate(imageToTapPrefab, content);
             RectTransform rt = imageToTap.GetComponent<RectTransform>();
             rt.sizeDelta = new Vector2(rt.sizeDelta.x, 1000);
+            if (!isBuilderMode){
+                Image image = imageToTap.GetComponent<Image>();
+                image.sprite = cameraManager.LoadImageFromPath(tapImagePath);
+            }
             imageToTap.correctAreaLocation = correctTapLocation;
             AddInstructionText();
             if (!isBuilderMode) {

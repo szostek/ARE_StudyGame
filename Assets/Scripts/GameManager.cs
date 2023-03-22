@@ -27,15 +27,15 @@ public class GameManager : MonoBehaviour
     };
 
     [Header("Questions:")]
-    public List<QuestionSO> pcmQuestions;
-    public List<QuestionSO> pjmQuestions;
-    public List<QuestionSO> paQuestions;
-    public List<QuestionSO> ppdQuestions;
-    public List<QuestionSO> pddQuestions;
-    public List<QuestionSO> ceQuestions;    
-    private List<QuestionSO> tempQuestionList = new List<QuestionSO>();
+    public List<SaveQuestionObject> pcmQuestions;
+    public List<SaveQuestionObject> pjmQuestions;
+    public List<SaveQuestionObject> paQuestions;
+    public List<SaveQuestionObject> ppdQuestions;
+    public List<SaveQuestionObject> pddQuestions;
+    public List<SaveQuestionObject> ceQuestions;    
+    private List<SaveQuestionObject> tempQuestionList = new List<SaveQuestionObject>();
     // totalQuestionList is used to assign index for each question, used by status panel:
-    private List<QuestionSO> totalQuestionList = new List<QuestionSO>();
+    private List<SaveQuestionObject> totalQuestionList = new List<SaveQuestionObject>();
 
     public TMP_Text timerText;
     private float timer;
@@ -44,11 +44,13 @@ public class GameManager : MonoBehaviour
 
     private float totalPoints;
     private StatusController statusController;
+    private CameraManager cameraManager;
 
     private void Awake() 
     {
         InitiateTotalQuestions();
         statusController = GetComponent<StatusController>();
+        cameraManager = FindObjectOfType<CameraManager>();
     }
 
     public void StartGame()
@@ -123,27 +125,27 @@ public class GameManager : MonoBehaviour
     {
         foreach (int index in selectedCategories) {
             if (index == 0) {
-                foreach (QuestionSO q in pcmQuestions) {
+                foreach (SaveQuestionObject q in pcmQuestions) {
                     tempQuestionList.Add(q);
                 }
             } else if (index == 1) {
-                foreach (QuestionSO q in pjmQuestions) {
+                foreach (SaveQuestionObject q in pjmQuestions) {
                     tempQuestionList.Add(q);
                 }
             } else if (index == 2) {
-                foreach (QuestionSO q in paQuestions) {
+                foreach (SaveQuestionObject q in paQuestions) {
                     tempQuestionList.Add(q);
                 }
             } else if (index == 3) {
-                foreach (QuestionSO q in ppdQuestions) {
+                foreach (SaveQuestionObject q in ppdQuestions) {
                     tempQuestionList.Add(q);
                 }
             } else if (index == 4) {
-                foreach (QuestionSO q in pddQuestions) {
+                foreach (SaveQuestionObject q in pddQuestions) {
                     tempQuestionList.Add(q);
                 }
             } else if (index == 5) {
-                foreach (QuestionSO q in ceQuestions) {
+                foreach (SaveQuestionObject q in ceQuestions) {
                     tempQuestionList.Add(q);
                 }
             }
@@ -156,7 +158,7 @@ public class GameManager : MonoBehaviour
     private void RandomizeAndTrimList()
     {
         for (int i = 0; i < tempQuestionList.Count; i++) {
-            QuestionSO temp = tempQuestionList[i];
+            SaveQuestionObject temp = tempQuestionList[i];
             int randomIndex = Random.Range(i, tempQuestionList.Count);
             tempQuestionList[i] = tempQuestionList[randomIndex];
             tempQuestionList[randomIndex] = temp;
@@ -169,30 +171,36 @@ public class GameManager : MonoBehaviour
     public void CreateQuestion()
     {
         if (tempQuestionList.Count > 0) {
-            QuestionSO q = tempQuestionList[Random.Range(0, tempQuestionList.Count)];
+            SaveQuestionObject q = tempQuestionList[Random.Range(0, tempQuestionList.Count)];
             MultiCardController questionCard = Instantiate(multChoicePrefab, canvas);
             questionCard.qIndex = q.questionIndex;
-            questionCard.questionType = q.GetQuestionType();
-            questionCard.question = q.question;
-            questionCard.description = q.description;
-            questionCard.instructions = q.GetInstruction();
+            questionCard.questionType = q.type;
+            questionCard.question = q.questionText;
+            questionCard.description = q.questionDetailsText;
+            questionCard.instructions = q.instruction;
             questionCard.hasImagesForAnswers = q.hasImageAnswers;
             if (q.hasImageAnswers) {
-                questionCard.imgAnswers = q.imgAnswers;
-                questionCard.answerAmount = q.imgAnswers.Length;
+                Sprite[] images = new Sprite[q.imageAnswerFilePaths.Count];
+                for (int i = 0; i < q.imageAnswerFilePaths.Count; i++) {
+                    images[i] = cameraManager.LoadImageFromPath(q.imageAnswerFilePaths[i]);
+                }
+                questionCard.imgAnswers = images;
+                questionCard.answerAmount = q.imageAnswerFilePaths.Count;
             } else {
-                questionCard.answers = q.answers;
-                questionCard.answerAmount = q.answers.Length;
+                questionCard.answers = q.textAnswers;
+                questionCard.answerAmount = q.textAnswers.Length;
             }
-            questionCard.correctAnswersList = q.correctAnswerIndicies;
-            if (q.imageRef != null) {
-                questionCard.imageRef = q.imageRef;
+            questionCard.correctAnswersList = q.correctAnswerIds;
+            if (!string.IsNullOrEmpty(q.refImageFilePath)) {
+                questionCard.imageRef = cameraManager.LoadImageFromPath(q.refImageFilePath);
             }
-            if (q.correctAnswerIndicies.Count > 1) {
+            if (q.correctAnswerIds.Count > 1) {
                 questionCard.hasMultAnswers = true;
             }
-            if (q.GetQuestionType() == "isTapOnImage") {
-                questionCard.imageToTapPrefab = q.imageToTap;
+            if (q.type == "isTapOnImage") {
+                // questionCard.imageToTapPrefab = q.imageToTap;
+                questionCard.tapImagePath = q.tapImageFilePath;
+                questionCard.correctTapLocation = q.correctTapAreaPosition;
             }
             tempQuestionList.Remove(q);
             currentCard = questionCard.gameObject;
@@ -213,28 +221,34 @@ public class GameManager : MonoBehaviour
 
     public void InitiateTotalQuestions()
     {
-        foreach (QuestionSO q in pcmQuestions) {
-            totalQuestionList.Add(q);
+        totalQuestionList.Clear();
+        tempQuestionList.Clear();
+        List<string> allQuestions = new List<string>();
+        allQuestions = SaveSystem.LoadAllQuestions();
+        if (allQuestions != null) {
+            foreach (string qString in allQuestions) {
+                SaveQuestionObject saveObject = JsonUtility.FromJson<SaveQuestionObject>(qString);
+                totalQuestionList.Add(saveObject);
+                if (saveObject.categoryIndex == 0) {
+                    pcmQuestions.Add(saveObject);
+                } else if (saveObject.categoryIndex == 1) {
+                    pjmQuestions.Add(saveObject);
+                } else if (saveObject.categoryIndex == 2) {
+                    paQuestions.Add(saveObject);
+                } else if (saveObject.categoryIndex == 3) {
+                    ppdQuestions.Add(saveObject);
+                } else if (saveObject.categoryIndex == 4) {
+                    pddQuestions.Add(saveObject);
+                } else if (saveObject.categoryIndex == 5) {
+                    ceQuestions.Add(saveObject);
+                }
+            }
+            Debug.Log(allQuestions.Count);
+            for (int i = 0; i < totalQuestionList.Count; i++) {
+                SaveQuestionObject q = totalQuestionList[i];
+                q.questionIndex = i;
+            }
         }
-        foreach (QuestionSO q in pjmQuestions) {
-            totalQuestionList.Add(q);
-        }
-        foreach (QuestionSO q in paQuestions) {
-            totalQuestionList.Add(q);
-        }
-        foreach (QuestionSO q in ppdQuestions) {
-            totalQuestionList.Add(q);
-        }
-        foreach (QuestionSO q in pddQuestions) {
-            totalQuestionList.Add(q);
-        }
-        foreach (QuestionSO q in ceQuestions) {
-            totalQuestionList.Add(q);
-        }
-        for (int i = 0; i < totalQuestionList.Count; i++) {
-            QuestionSO q = totalQuestionList[i];
-            q.questionIndex = i;
-        }            
     }
 
     public int TotalQuestions()

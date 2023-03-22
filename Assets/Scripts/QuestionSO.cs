@@ -60,5 +60,5 @@ public enum Categories {
 
 public class QuestionCategories {
     public int key;
-    public QuestionSO question;
+    public SaveQuestionObject question;
 }

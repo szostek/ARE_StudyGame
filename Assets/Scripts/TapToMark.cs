@@ -34,7 +34,6 @@ public class TapToMark : MonoBehaviour, IPointerClickHandler
         if (!isBuilder) {
             currentAreaMarker = Instantiate(correctAreaPrefab, rectTransform);
             currentAreaMarker.GetComponent<Image>().enabled = false;
-            Debug.Log(currentAreaMarker.GetComponent<Image>().enabled);
             currentAreaMarker.transform.localPosition = correctAreaLocation;
         }
     }
