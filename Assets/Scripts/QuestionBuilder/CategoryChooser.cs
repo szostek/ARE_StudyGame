@@ -52,7 +52,6 @@ public class CategoryChooser : MonoBehaviour
     public void SelectButtonId(int id)
     {
         selectedId = id;
-        Debug.Log(selectedId);
     }
 
     public void NextButton()

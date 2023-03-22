@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class AnswerImage : MonoBehaviour
 {
-    public RawImage previewImage;
+    public Image previewImage;
     public Toggle correctAnswerToggle;
     public Button takePhotoButton;
     public Button uploadPhotoButton;

@@ -15,7 +15,7 @@ public class CameraManager : MonoBehaviour
         builderManager = GetComponent<QBuilderManager>();    
     }
 
-    public void TakePicture(int maxSize, RawImage image, int index)
+    public void TakePicture(int maxSize, Image image, int index)
     {
         NativeCamera.Permission permission = NativeCamera.TakePicture( ( path ) =>
         {
@@ -46,7 +46,8 @@ public class CameraManager : MonoBehaviour
                     Debug.Log( "Couldn't load texture from " + tempPath );
                     return;
                 }
-                image.texture = texture;
+                Sprite imageSprite = Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
+                image.sprite = imageSprite;
             }
         }, maxSize );
 

@@ -6,15 +6,20 @@ using TMPro;
 
 public class QuestionDetails : MonoBehaviour
 {
+    [Header("Question Info:")]
     [SerializeField] TMP_InputField questionText;
     [SerializeField] TMP_InputField questionDetailsText;
-    [SerializeField] RawImage previewImage;
+    [SerializeField] Image previewImage;
     [SerializeField] Button nextButton;
+    [SerializeField] TMP_Text imagePath;
+
+    [Header("Next Panels:")]
+    public GameObject a_textImageAnswerPanel;
+    public GameObject b_fillInBlankPanel;
+    public GameObject c_tapImagePanel;
 
     private QBuilderManager builderManager;
     private CameraManager cameraManager;
-
-    [SerializeField] TMP_Text imagePath;
 
     private void Awake() 
     {
@@ -38,10 +43,18 @@ public class QuestionDetails : MonoBehaviour
                 builderManager.refImageFilePath = refimagePaths[0];
             }
         }
+        if (builderManager.type == "isMultiChoice") {
+            a_textImageAnswerPanel.SetActive(true);
+        } else if (builderManager.type == "isFillInBlank") {
+            b_fillInBlankPanel.SetActive(true);
+        } else if (builderManager.type == "isTapOnImage") {
+            c_tapImagePanel.SetActive(true);
+        }
     }
 
     public void TakePhotoButton()
     {
         cameraManager.TakePicture(512, previewImage, 666);
     }
+
 }

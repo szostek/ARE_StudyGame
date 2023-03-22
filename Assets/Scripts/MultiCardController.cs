@@ -19,13 +19,14 @@ public class MultiCardController : MonoBehaviour
     public int answerAmount;
     public bool hasMultAnswers;
     public bool hasImagesForAnswers;
+    [HideInInspector] public Sprite imageRef;
 
-    public TapToMark imageToTapPrefab;
-    private TapToMark imageToTap;
+    [HideInInspector] public TapToMark imageToTapPrefab;
+    [HideInInspector] private TapToMark imageToTap;
     
-    public Sprite imageRef;
     public bool tappedOnCorrectArea;
     public bool hasTappedImage;
+    public Vector2 correctTapLocation;
 
     private GameManager gameManager;
     private StatusController statusController;
@@ -48,6 +49,12 @@ public class MultiCardController : MonoBehaviour
     [SerializeField] Animator correctAnimator;
     [SerializeField] Animator wrongAnimator;
 
+    [Header("Builder Stuff:")]
+    [SerializeField] GameObject builderSaveButtonPanel;
+    [SerializeField] TMP_Text alertText;
+    private QBuilderManager builderManager;
+    [HideInInspector] public bool isBuilderMode = false;
+
     private Button submitButton;    
     private List<Button> selectedButtons = new List<Button>();
     private List<Button> allAnswerButtons = new List<Button>();
@@ -58,7 +65,9 @@ public class MultiCardController : MonoBehaviour
     {
         gameManager = FindObjectOfType<GameManager>();
         statusController = FindObjectOfType<StatusController>();
+        builderManager = FindObjectOfType<QBuilderManager>();
     }
+
     private void Start() 
     {
         PopulateQuestion();
@@ -79,8 +88,7 @@ public class MultiCardController : MonoBehaviour
     public void PopulateQuestion()
     {
         // Clear the list of selected buttons
-        selectedButtons.Clear();
-        
+        selectedButtons.Clear();        
         questionText.text = question;
 
         if (questionType == "isMultiChoice") {
@@ -89,20 +97,33 @@ public class MultiCardController : MonoBehaviour
             }
             AddInstructionText();
             PopulateAnswerButtons();
-            AddMultChoiceSubmitButton();
+            if (!isBuilderMode) {
+                AddMultChoiceSubmitButton();
+            } else {
+                builderSaveButtonPanel.SetActive(true);
+            }
         } else if (questionType == "isFillInBlank") {
             if (imageRef != null) {
                 AddImageRefIfAvailable();
             }
             AddInstructionText();
             answerTextField = Instantiate(fillInBlankPrefab, content);
-            AddFillBlankSubmitButton();
+            if (!isBuilderMode) {
+                AddFillBlankSubmitButton();
+            } else {
+                builderSaveButtonPanel.SetActive(true);
+            }
         } else if (questionType == "isTapOnImage") {
             imageToTap = Instantiate(imageToTapPrefab, content);
             RectTransform rt = imageToTap.GetComponent<RectTransform>();
             rt.sizeDelta = new Vector2(rt.sizeDelta.x, 1000);
+            imageToTap.correctAreaLocation = correctTapLocation;
             AddInstructionText();
-            AddImageTapSubmitButton();
+            if (!isBuilderMode) {
+                AddImageTapSubmitButton();
+            } else {
+                builderSaveButtonPanel.SetActive(true);
+            }
         }
 
     }
@@ -126,7 +147,7 @@ public class MultiCardController : MonoBehaviour
         submitButton.onClick.AddListener(() => 
         {
             foreach (Button button in selectedButtons) {
-                int selectedAnswer = button.GetComponent<AnswerButton>().answerIndex;
+                int selectedAnswer = button.GetComponent<AnswerButton>().answerIndex;                
                 selectedAnswerList.Add(selectedAnswer);
             }
             // Check if the answers are correct:
@@ -303,6 +324,25 @@ public class MultiCardController : MonoBehaviour
 
         // If all elements match, return true
         return true;
+    }
+
+    public void SaveQuestionButton()
+    {
+        builderManager.SaveQuestion();
+        alertText.gameObject.SetActive(true);
+        StartCoroutine(HidePreviewCard());
+    }
+
+    IEnumerator HidePreviewCard()
+    {
+        yield return new WaitForSeconds(2f);
+        builderManager.HideAllBuilderMenus();
+        Destroy(gameObject);
+    }
+
+    public void CancelButton()
+    {
+        Destroy(gameObject);
     }
 
 }

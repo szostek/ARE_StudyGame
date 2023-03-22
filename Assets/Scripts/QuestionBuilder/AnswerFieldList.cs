@@ -145,57 +145,56 @@ public class AnswerFieldList : MonoBehaviour
     public void ShowPreviewCard()
     {
         MultiCardController previewCard = Instantiate(previewCardPrefab, canvas);
+        previewCard.isBuilderMode = true;
         previewCard.questionType = builderManager.type;
         previewCard.hasImagesForAnswers = hasImageAnswers;
         previewCard.qIndex = gameManager.TotalQuestions() + 1;
         previewCard.question = builderManager.questionText;
         previewCard.instructions = builderManager.instruction;
-        previewCard.correctAnswersList = builderManager.correctAnswerIds;
         if (hasImageAnswers) {
+            correctAnswerIds = new List<int>();
             Sprite[] images = new Sprite[cameraManager.tempImagePaths.Count];
             for (int i = 0; i < cameraManager.tempImagePaths.Count; i++) {
                 images[i] = cameraManager.LoadImageFromPath(cameraManager.tempImagePaths[i]);
             }
+            for (int i = 0; i < imageFieldsList.Count; i++) {
+                // correctAnswerIds.Add(imageFieldsList[i].correctAnswerToggle.isOn ? 1: 0);
+                if (imageFieldsList[i].correctAnswerToggle.isOn) {
+                    correctAnswerIds.Add(imageFieldsList[i].fieldId);
+                }
+            }
+            builderManager.correctAnswerIds = correctAnswerIds;
             previewCard.imgAnswers = images;
             previewCard.answerAmount = images.Length;
+            previewCard.correctAnswersList = correctAnswerIds;
+            previewCard.hasMultAnswers = correctAnswerIds.Count > 1;
         } else {
             textAnswers = new string[textFieldsList.Count];
+            correctAnswerIds = new List<int>();
             for (int i = 0; i < textFieldsList.Count; i++) {
                 textAnswers[i] = textFieldsList[i].answerTextField.text;
+                if (textFieldsList[i].correctAnswerToggle.isOn) {
+                    correctAnswerIds.Add(textFieldsList[i].fieldId);
+                }
             }
+            builderManager.textAnswers = textAnswers;
+            builderManager.correctAnswerIds = correctAnswerIds;
             previewCard.answers = textAnswers;
             previewCard.answerAmount = textAnswers.Length;
+            previewCard.correctAnswersList = correctAnswerIds;
+            previewCard.hasMultAnswers = correctAnswerIds.Count > 1;
         }
         if (!string.IsNullOrEmpty(builderManager.refImageFilePath)) {
             previewCard.imageRef = cameraManager.LoadImageFromPath(builderManager.refImageFilePath);
         }
-    }
-
-    public void SaveQuestionButton()
-    {
-        if (hasImageAnswers) {
-            builderManager.hasImageAnswers = true;
-            correctAnswerIds = new List<int>();
-            List<string> refimagePaths = cameraManager.SavePictures();
-            if (refimagePaths.Count > 0) {
-                builderManager.imageAnswerFilePaths = refimagePaths;
-            }
-            for (int i = 0; i < imageFieldsList.Count; i++) {
-                correctAnswerIds.Add(imageFieldsList[i].correctAnswerToggle.isOn ? 1: 0);
-            }
-            builderManager.correctAnswerIds = correctAnswerIds;
-            builderManager.SaveQuestion();
-        } else {
-            builderManager.hasImageAnswers = false;
-            textAnswers = new string[textFieldsList.Count];
-            correctAnswerIds = new List<int>();
-            for (int i = 0; i < textFieldsList.Count; i++) {
-                textAnswers[i] = textFieldsList[i].answerTextField.text;
-                correctAnswerIds.Add(textFieldsList[i].correctAnswerToggle.isOn ? 1 : 0);
-            }
-            builderManager.textAnswers = textAnswers;
-            builderManager.correctAnswerIds = correctAnswerIds;
-            builderManager.SaveQuestion();
+        // Adjust instruction text if there's only 1 correct answer:
+        int correctCount = 0;
+        foreach(int id in builderManager.correctAnswerIds) {
+            if (id == 1) correctCount += 1;
+        }
+        if (correctCount == 1) {
+            builderManager.instruction = "Choose only one Answer";
+            previewCard.instructions = builderManager.instruction;
         }
     }
 

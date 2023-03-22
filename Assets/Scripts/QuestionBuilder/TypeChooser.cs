@@ -21,8 +21,15 @@ public class TypeChooser : MonoBehaviour
     };
     private string[] correctedTypes = new string[] {
         "isMultiChoice",
+        "isMultiChoice",
         "isFillInBlank",
         "isTapOnImage",
+    };
+    private string[] instructions = new string[] {
+        "Choose all that apply",
+        "Choose True or False",
+        "Fill in the blank",
+        "Tap a location on the image",
     };
 
     private void Awake() 
@@ -32,27 +39,22 @@ public class TypeChooser : MonoBehaviour
 
     private void Start() 
     {
+        builderManager.type = correctedTypes[0];
         for (int i = 0; i < questionTypes.Length; i++) {
             TypeButton button = Instantiate(typeButtonPrefab, typeList);
             button.buttonId = i;
             button.typeText.text = questionTypes[i];
             button.icon.sprite = icons[i];
             button.typeChooser = this;
-        }
-        builderManager.instruction = instructionDropdown.options[instructionDropdown.value].text;
-        instructionDropdown.onValueChanged.AddListener((int value) => {
-            builderManager.instruction = instructionDropdown.options[instructionDropdown.value].text;
-            Debug.Log(builderManager.instruction);
-        });
+        }       
     }
 
     public void ChooseButton(int id)
     {
-        int correctedId = id;
-        if (id == 1) {
-            correctedId = 0;
-        }
-        builderManager.type = correctedTypes[correctedId];
+        builderManager.type = correctedTypes[id];
+        // Instruction is temp set here, needs to be adjusted in QBuilderManager if there's only one 1 in the answer index list:
+        builderManager.instruction = instructions[id];
+        
     }
 
 
