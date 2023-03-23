@@ -26,6 +26,7 @@ public static class SaveSystem
         }
         DirectoryInfo directoryInfo = new DirectoryInfo(SAVE_FOLDER);
         FileInfo[] savedQuestions = directoryInfo.GetFiles("*.txt");
+        
         List<string> questionList = new List<string>();
         foreach (FileInfo fileInfo in savedQuestions) {
             string saveString = File.ReadAllText(fileInfo.FullName);
@@ -36,5 +37,7 @@ public static class SaveSystem
         } else {
             return null;
         }
+
+        // Load in all built-in questions here
     }
 }
