@@ -189,11 +189,7 @@ public class AnswerFieldList : MonoBehaviour
             previewCard.imageRef = cameraManager.LoadImageFromPath(builderManager.refImageFilePath);
         }
         // Adjust instruction text if there's only 1 correct answer:
-        int correctCount = 0;
-        foreach(int id in builderManager.correctAnswerIds) {
-            if (id == 1) correctCount += 1;
-        }
-        if (correctCount == 1) {
+        if (correctAnswerIds.Count == 1) {
             builderManager.instruction = "Choose only one Answer";
             previewCard.instructions = builderManager.instruction;
         }

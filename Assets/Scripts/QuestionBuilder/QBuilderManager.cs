@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class QBuilderManager : MonoBehaviour
 {
@@ -8,20 +9,19 @@ public class QBuilderManager : MonoBehaviour
     [HideInInspector] public int categoryIndex;
     [HideInInspector] public string type;
     [HideInInspector] public string instruction;
-
     [HideInInspector] public string questionText;
     [HideInInspector] public string questionDetailsText;
     [HideInInspector] public string refImageFilePath;
-
     [HideInInspector] public bool hasImageAnswers;
     [HideInInspector] public string[] textAnswers;
     [HideInInspector] public List<string> imageAnswerFilePaths;
     [HideInInspector] public List<int> correctAnswerIds;
-
     [HideInInspector] public Vector2 correctTapAreaPosition;
     [HideInInspector] public string tapImageFilePath;
 
+    [Header("UI References:")]
     [SerializeField] GameObject[] builderMenus;
+    [SerializeField] Image refImagePreview;
 
     private CameraManager cameraManager;
     private GameManager gameManager;
@@ -82,11 +82,13 @@ public class QBuilderManager : MonoBehaviour
         //     imagePaths += path + ", ";
         // }
         // Debug.Log(imagePaths);
+        refImagePreview.sprite = null;
         gameManager.InitiateTotalQuestions();
     }
 
     public void HideAllBuilderMenus()
     {
+        refImagePreview.sprite = null;
         foreach (GameObject menu in builderMenus) {
             menu.SetActive(false);
         }

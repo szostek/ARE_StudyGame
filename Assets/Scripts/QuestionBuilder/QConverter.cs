@@ -37,7 +37,7 @@ public class QConverter : MonoBehaviour
             string json = JsonUtility.ToJson(saveObject);
             File.WriteAllText(questionsFolderPath + question.Name, json);
         }
-        Debug.Log("Finished converting question files!");
+        Debug.Log("Finished converting. BE SURE TO COPY ALL IMAGES OVER TO IMAGES FOLDER!!");
     }
 
 }

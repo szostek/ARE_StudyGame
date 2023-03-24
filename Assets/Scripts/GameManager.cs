@@ -150,6 +150,7 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+        Debug.Log("Temp Questions list: " + tempQuestionList.Count);
         if (isChallengeMode) {
             RandomizeAndTrimList();
         }
@@ -203,6 +204,7 @@ public class GameManager : MonoBehaviour
                 questionCard.correctTapLocation = q.correctTapAreaPosition;
             }
             tempQuestionList.Remove(q);
+            Debug.Log("Remaining Questions: " + tempQuestionList.Count);
             currentCard = questionCard.gameObject;
         } else {
             Debug.Log("No more questions available!");
@@ -223,6 +225,7 @@ public class GameManager : MonoBehaviour
     {
         totalQuestionList.Clear();
         tempQuestionList.Clear();
+        ClearAllCategoryLists();
         List<string> allQuestions = new List<string>();
         allQuestions = SaveSystem.LoadAllQuestions();
         if (allQuestions != null) {
@@ -243,12 +246,23 @@ public class GameManager : MonoBehaviour
                     ceQuestions.Add(saveObject);
                 }
             }
-            Debug.Log(allQuestions.Count);
+            Debug.Log("Total num of questions: " + allQuestions.Count);
+            Debug.Log("Total q's in PcM category: " + pcmQuestions.Count);
             for (int i = 0; i < totalQuestionList.Count; i++) {
                 SaveQuestionObject q = totalQuestionList[i];
                 q.questionIndex = i;
             }
         }
+    }
+
+    private void ClearAllCategoryLists()
+    {
+        pcmQuestions.Clear();
+        pjmQuestions.Clear();
+        paQuestions.Clear();
+        ppdQuestions.Clear();
+        pddQuestions.Clear();
+        ceQuestions.Clear();
     }
 
     public int TotalQuestions()
