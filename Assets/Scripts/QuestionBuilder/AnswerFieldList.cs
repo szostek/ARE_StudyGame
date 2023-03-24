@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class AnswerFieldList : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class AnswerFieldList : MonoBehaviour
     private GameObject currentAddFieldButton;
     [SerializeField] Switch answerTypeSwitch;
     public RectTransform answerFieldList;
+    [SerializeField] TMP_Text alertText;
 
     // Card is used for question preview. Show this before saving question:
     [SerializeField] MultiCardController previewCardPrefab;
@@ -144,6 +146,7 @@ public class AnswerFieldList : MonoBehaviour
     // PUT THESE TWO FUNCTIONS IN THE QBuilderManager SCRIPT:
     public void ShowPreviewCard()
     {
+        if (!ValidateAnswers()) return;
         MultiCardController previewCard = Instantiate(previewCardPrefab, canvas);
         previewCard.isBuilderMode = true;
         previewCard.questionType = builderManager.type;
@@ -193,6 +196,38 @@ public class AnswerFieldList : MonoBehaviour
             builderManager.instruction = "Choose only one Answer";
             previewCard.instructions = builderManager.instruction;
         }
+    }
+
+    private bool ValidateAnswers()
+    {
+        if (textFieldsList.Count == 0) {
+            alertText.text = "Must have at least 1 answer!";
+            StartCoroutine(ClearAlertText());
+            return false;
+        }
+        List<int> toggleCheck = new List<int>();
+        foreach (AnswerField answer in textFieldsList) {
+            if (string.IsNullOrEmpty(answer.answerTextField.text)) {
+                alertText.text = "Cannot include blank answers!";
+                StartCoroutine(ClearAlertText());
+                return false;
+            }
+            if (answer.correctAnswerToggle.isOn) {
+                toggleCheck.Add(1);
+            }
+        }
+        if (toggleCheck.Count == 0) {
+            alertText.text = "Must specify at least 1 correct answer!";
+            StartCoroutine(ClearAlertText());
+            return false;
+        }
+        return true;
+    }
+
+    IEnumerator ClearAlertText()
+    {
+        yield return new WaitForSeconds(1.5f);
+        alertText.text = "";
     }
 
 

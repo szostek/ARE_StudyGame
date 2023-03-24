@@ -7,6 +7,7 @@ using TMPro;
 public class AnswerTapImage : MonoBehaviour
 {
     [SerializeField] TapToMark tapImage;
+    [SerializeField] TMP_Text alertText;
 
     private CameraManager cameraManager;
     private QBuilderManager builderManager;
@@ -33,6 +34,8 @@ public class AnswerTapImage : MonoBehaviour
         Image imagePreview = tapImage.GetComponent<Image>();
         cameraManager.TakePicture(512, imagePreview, 777);
         tapImage.hasUploadedTapImage = true;
+        alertText.color = Color.black;
+        alertText.text = "Great! Now tap the image to choose the target location.";
         SaveTapImage();
     }
 
@@ -46,6 +49,12 @@ public class AnswerTapImage : MonoBehaviour
 
     public void ShowPreviewCard()
     {
+        if (builderManager.correctTapAreaPosition == Vector2.zero) {
+            alertText.color = Color.red;
+            alertText.text = "Tap the image above to choose the target location.";
+            StartCoroutine(ClearAlertText());
+            return;
+        }
         MultiCardController previewCard = Instantiate(previewCardPrefab, canvas);
         previewCard.isBuilderMode = true;
         previewCard.questionType = builderManager.type;
@@ -59,6 +68,13 @@ public class AnswerTapImage : MonoBehaviour
         if (!string.IsNullOrEmpty(builderManager.refImageFilePath)) {
             previewCard.imageRef = cameraManager.LoadImageFromPath(builderManager.refImageFilePath);
         }
-
     }
+
+    IEnumerator ClearAlertText()
+    {
+        yield return new WaitForSeconds(1.5f);
+        alertText.text = "";
+        alertText.color = Color.black;
+    }
+
 }

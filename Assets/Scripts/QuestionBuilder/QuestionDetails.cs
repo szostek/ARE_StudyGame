@@ -12,6 +12,7 @@ public class QuestionDetails : MonoBehaviour
     [SerializeField] Image previewImage;
     [SerializeField] Button nextButton;
     [SerializeField] TMP_Text imagePath;
+    [SerializeField] Button removeImageButton;
 
     [Header("Next Panels:")]
     public GameObject a_textImageAnswerPanel;
@@ -55,6 +56,19 @@ public class QuestionDetails : MonoBehaviour
     public void TakePhotoButton()
     {
         cameraManager.TakePicture(512, previewImage, 666);
+        removeImageButton.gameObject.SetActive(true);
+    }
+
+    public void RemoveImageButton()
+    {
+        // Delete image from temp files via cameraManager
+        if (cameraManager.RemoveTempRefImage()) {            
+            previewImage.sprite = null;
+            removeImageButton.gameObject.SetActive(false);
+        } else {
+            Debug.Log("no file to delete");
+        }
+
     }
 
 }

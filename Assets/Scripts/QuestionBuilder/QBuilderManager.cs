@@ -22,6 +22,7 @@ public class QBuilderManager : MonoBehaviour
     [Header("UI References:")]
     [SerializeField] GameObject[] builderMenus;
     [SerializeField] Image refImagePreview;
+    [SerializeField] Image tapImagePreview;
 
     private CameraManager cameraManager;
     private GameManager gameManager;
@@ -89,9 +90,12 @@ public class QBuilderManager : MonoBehaviour
     public void HideAllBuilderMenus()
     {
         refImagePreview.sprite = null;
+        tapImagePreview.sprite = null;
         foreach (GameObject menu in builderMenus) {
             menu.SetActive(false);
         }
+        cameraManager.RemoveAllTempImages();
+        cameraManager.RemoveTempTapImageIfValid();
     }
 
 

@@ -9,6 +9,7 @@ public class CameraManager : MonoBehaviour
 {
     private QBuilderManager builderManager;
     [HideInInspector] public List<string> tempImagePaths = new List<string>();
+    private string tempTapImagePath;
 
     private void Awake() 
     {
@@ -73,6 +74,11 @@ public class CameraManager : MonoBehaviour
             
             newPaths.Add(newPath);
             File.Copy(path, newPath);
+
+            // If the saved file is a tap-image, save it as temp so it can be deleted if user goes home...
+            if (file.Name.Contains("777")) {
+                tempTapImagePath = newPath;
+            }
         }
         foreach (string path in tempImagePaths) {
             File.Delete(path);
@@ -102,6 +108,24 @@ public class CameraManager : MonoBehaviour
             }
             tempImagePaths.Clear();
         }
+    }
+
+    public bool RemoveTempRefImage()
+    {
+        foreach (string path in tempImagePaths) {
+            FileInfo file = new FileInfo(path);
+            if (file.Name.Contains("666")) {
+                File.Delete(file.FullName);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void RemoveTempTapImageIfValid()
+    {
+        if (string.IsNullOrEmpty(tempTapImagePath)) return;
+        File.Delete(tempTapImagePath);
     }
 
 }
