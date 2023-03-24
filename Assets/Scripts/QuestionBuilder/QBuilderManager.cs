@@ -42,6 +42,7 @@ public class QBuilderManager : MonoBehaviour
             }
         }
         questionIndex = gameManager.TotalQuestions() + 1;
+        cameraManager.tempTapImagePath = "";
 
         SaveQuestionObject saveObject = new SaveQuestionObject {
             questionIndex = questionIndex,
@@ -61,30 +62,9 @@ public class QBuilderManager : MonoBehaviour
         string json = JsonUtility.ToJson(saveObject);
         SaveSystem.SaveQuestion(json, questionIndex);
 
-        // Debug.Log("Category index: " + categoryIndex);
-        // Debug.Log("Type: " + type);
-        // Debug.Log("instruction: " + instruction);
-        // Debug.Log("question text: " + questionText);
-        // Debug.Log("Details text: " + questionDetailsText);
-        // Debug.Log("Ref image file path" + refImageFilePath);
-        // string answerTexts = "";
-        // foreach(string i in textAnswers) {
-        //     answerTexts += i + ", ";
-        // }
-        // Debug.Log("answers: " + answerTexts);
-        // string correctIds = "";
-        // foreach (int id in correctAnswerIds) {
-        //     correctIds += id.ToString() + ", ";
-        // }
-        // Debug.Log("correct ids: " + correctIds);
-
-        // string imagePaths = "";
-        // foreach (string path in imageAnswerFilePaths) {
-        //     imagePaths += path + ", ";
-        // }
-        // Debug.Log(imagePaths);
         refImagePreview.sprite = null;
         gameManager.InitiateTotalQuestions();
+        ResetAllInternalVars();
     }
 
     public void HideAllBuilderMenus()
@@ -96,6 +76,25 @@ public class QBuilderManager : MonoBehaviour
         }
         cameraManager.RemoveAllTempImages();
         cameraManager.RemoveTempTapImageIfValid();
+    }
+
+    //Ideally if the user goes home without finishing question, the internal vars get cleared, and all text fields, etc.
+
+    public void ResetAllInternalVars()
+    {
+        questionIndex = 0;
+        categoryIndex = 0;
+        type = "";
+        instruction = "";
+        questionText = "";
+        questionDetailsText = "";
+        refImageFilePath = "";
+        hasImageAnswers = false;
+        textAnswers = null;
+        imageAnswerFilePaths = null;
+        correctAnswerIds = null;
+        correctTapAreaPosition = new Vector2(0, 0);
+        tapImageFilePath = "";
     }
 
 

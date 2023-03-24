@@ -11,8 +11,9 @@ public class QConverter : MonoBehaviour
 
     public void CovertFiles()
     {
-        string questionsFolderPath = $"{Application.dataPath}/Questions/NewSystem/Questions/";
-        string newImageFolderPath = $"{Application.dataPath}/Questions/NewSystem/Images/";
+        
+        string questionsFolderPath = $"{Application.dataPath}/Resources/Questions/";
+        string newImageFolderPath = $"{Application.dataPath}/Resources/Images/"; 
         DirectoryInfo directoryInfo = new DirectoryInfo(questionsFolderPath);
         FileInfo[] savedQuestions = directoryInfo.GetFiles("*.txt");
         foreach (FileInfo question in savedQuestions) {
@@ -37,7 +38,7 @@ public class QConverter : MonoBehaviour
             string json = JsonUtility.ToJson(saveObject);
             File.WriteAllText(questionsFolderPath + question.Name, json);
         }
-        Debug.Log("Finished converting. BE SURE TO COPY ALL IMAGES OVER TO IMAGES FOLDER!!");
+        Debug.Log("Finished converting. BE SURE TO COPY ALL IMAGES OVER TO RESOUCES/IMAGES FOLDER!!");
     }
 
 }

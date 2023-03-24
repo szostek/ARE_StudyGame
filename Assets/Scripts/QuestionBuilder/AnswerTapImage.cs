@@ -36,19 +36,21 @@ public class AnswerTapImage : MonoBehaviour
         tapImage.hasUploadedTapImage = true;
         alertText.color = Color.black;
         alertText.text = "Great! Now tap the image to choose the target location.";
-        SaveTapImage();
     }
 
-    public void SaveTapImage()
+    private void SaveTapImage()
     {
-        List<string> refimagePaths = cameraManager.SavePictures();
-        if (refimagePaths.Count > 0) {
-            builderManager.tapImageFilePath = refimagePaths[0];
+        List<string> imagePaths = cameraManager.SavePictures();
+        foreach (string path in imagePaths) {
+            if (path.Contains("_777")) {
+                builderManager.tapImageFilePath = path;
+            }
         }
     }
 
     public void ShowPreviewCard()
     {
+        SaveTapImage();
         if (builderManager.correctTapAreaPosition == Vector2.zero) {
             alertText.color = Color.red;
             alertText.text = "Tap the image above to choose the target location.";

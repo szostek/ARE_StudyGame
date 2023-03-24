@@ -2,11 +2,12 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public static class SaveSystem
 {
     public static readonly string SAVE_FOLDER = Application.persistentDataPath + "/SavedQuestions/";
-    public static readonly string questionsFolderPath = $"{Application.dataPath}/Questions/NewSystem/Questions/";
+    // public static readonly string questionsFolderPath = $"{Application.dataPath}/Questions/NewSystem/Questions/";
 
     public static void Init()
     {
@@ -37,13 +38,18 @@ public static class SaveSystem
         }
 
         // Load all built-in questions here:
-        DirectoryInfo builtInQuestionDir = new DirectoryInfo(questionsFolderPath);
-        FileInfo[] builtInQuestions = builtInQuestionDir.GetFiles("*.txt");
-        foreach (FileInfo qInfo in builtInQuestions) {
-            string qString = File.ReadAllText(qInfo.FullName);
+        // DirectoryInfo builtInQuestionDir = new DirectoryInfo(questionsFolderPath);
+        // FileInfo[] builtInQuestions = builtInQuestionDir.GetFiles("*.txt");
+        // foreach (FileInfo qInfo in builtInQuestions) {
+        //     string qString = File.ReadAllText(qInfo.FullName);
+        //     questionList.Add(qString);
+        // }
+        TextAsset[] questionFiles = Resources.LoadAll("Questions", typeof(TextAsset)).Cast<TextAsset>().ToArray();
+        foreach (TextAsset qInfo in questionFiles) {
+            string qString = qInfo.text;
             questionList.Add(qString);
         }
-
+        
         if (questionList.Count > 0) {
             return questionList;
         } else {

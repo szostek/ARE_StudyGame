@@ -24,4 +24,8 @@ public class AnswerImage : MonoBehaviour
     {
         cameraManager.TakePicture(512, previewImage, fieldId);
     }
+    public void UploadPhotoButton()
+    {
+        cameraManager.UploadPictureFromGallery(512, previewImage, fieldId);
+    }
 }

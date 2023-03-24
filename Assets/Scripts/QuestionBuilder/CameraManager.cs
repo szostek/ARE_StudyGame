@@ -9,7 +9,7 @@ public class CameraManager : MonoBehaviour
 {
     private QBuilderManager builderManager;
     [HideInInspector] public List<string> tempImagePaths = new List<string>();
-    private string tempTapImagePath;
+    [HideInInspector] public string tempTapImagePath;
 
     private void Awake() 
     {
@@ -55,6 +55,45 @@ public class CameraManager : MonoBehaviour
         Debug.Log( "Permission result: " + permission );
     }
 
+    public void UploadPictureFromGallery(int maxSize, Image image, int index)
+    {
+        NativeGallery.Permission permission = NativeGallery.GetImageFromGallery( ( path ) =>
+        {
+            if( path != null )
+            {
+                int curQuestionNum = builderManager.questionIndex;
+                int fileExt = index;
+                string directory = Application.persistentDataPath + "/TempImages";
+                if (!Directory.Exists(directory)) {
+                    Directory.CreateDirectory(directory);
+                }
+                string tempPath = $"{directory}/image_{curQuestionNum}_{fileExt}.jpg";
+                FileInfo newFile = new FileInfo(tempPath);
+                // while (newFile.Exists) {
+                //     fileExt++;
+                //     tempPath = $"{directory}/image_{curQuestionNum}_{fileExt}.jpg";
+                //     newFile = new FileInfo(tempPath);
+                // }
+                if (newFile.Exists) {
+                    File.Delete(tempPath);
+                }
+                File.Copy(path, tempPath);
+                tempImagePaths.Add(tempPath);
+                // Create a Texture2D from the captured image
+                Texture2D texture = NativeGallery.LoadImageAtPath( tempPath, maxSize );
+                if( texture == null )
+                {
+                    Debug.Log( "Couldn't load texture from " + tempPath );
+                    return;
+                }
+                Sprite imageSprite = Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
+                image.sprite = imageSprite;
+            }
+        } );
+
+        Debug.Log( "Permission result: " + permission );
+    }
+
     public List<string> SavePictures()
     {
         string directory = Application.persistentDataPath + "/CustomImages";
@@ -76,7 +115,7 @@ public class CameraManager : MonoBehaviour
             File.Copy(path, newPath);
 
             // If the saved file is a tap-image, save it as temp so it can be deleted if user goes home...
-            if (file.Name.Contains("777")) {
+            if (file.Name.Contains("_777")) {
                 tempTapImagePath = newPath;
             }
         }
@@ -89,14 +128,21 @@ public class CameraManager : MonoBehaviour
 
     public Sprite LoadImageFromPath(string path)
     {
-        Texture2D texture = NativeCamera.LoadImageAtPath( path, 512 );
-        if( texture == null )
-        {
-            Debug.Log( "Couldn't load texture from " + path );
-            return null;
+        if (path.Contains("Resources")) {
+            string fileName = Path.GetFileNameWithoutExtension(path);
+            Debug.Log(fileName);
+            Sprite sprite = Resources.Load<Sprite>($"Images/{fileName}");
+            return sprite;
+        } else {
+            Texture2D texture = NativeCamera.LoadImageAtPath( path, 512 );
+            if( texture == null )
+            {
+                Debug.Log( "Couldn't load texture from " + path );
+                return null;
+            }
+            Sprite image = Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
+            return image;
         }
-        Sprite image = Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
-        return image;
     }
 
     //Make a function to delete all temp photos if user goes home
@@ -114,7 +160,7 @@ public class CameraManager : MonoBehaviour
     {
         foreach (string path in tempImagePaths) {
             FileInfo file = new FileInfo(path);
-            if (file.Name.Contains("666")) {
+            if (file.Name.Contains("_666")) {
                 File.Delete(file.FullName);
                 return true;
             }

@@ -200,26 +200,50 @@ public class AnswerFieldList : MonoBehaviour
 
     private bool ValidateAnswers()
     {
-        if (textFieldsList.Count == 0) {
-            alertText.text = "Must have at least 1 answer!";
-            StartCoroutine(ClearAlertText());
-            return false;
-        }
-        List<int> toggleCheck = new List<int>();
-        foreach (AnswerField answer in textFieldsList) {
-            if (string.IsNullOrEmpty(answer.answerTextField.text)) {
-                alertText.text = "Cannot include blank answers!";
+        if (hasImageAnswers) {
+            if (imageFieldsList.Count == 0) {
+                alertText.text = "Must have at least 1 answer!";
                 StartCoroutine(ClearAlertText());
                 return false;
             }
-            if (answer.correctAnswerToggle.isOn) {
-                toggleCheck.Add(1);
+            List<int> toggleCheck = new List<int>();
+            foreach (AnswerImage answer in imageFieldsList) {
+                if (answer.previewImage.sprite == null) {
+                    alertText.text = "Answers cannot have blank images!";
+                    StartCoroutine(ClearAlertText());
+                    return false;
+                }
+                if (answer.correctAnswerToggle.isOn) {
+                    toggleCheck.Add(1);
+                }
             }
-        }
-        if (toggleCheck.Count == 0) {
-            alertText.text = "Must specify at least 1 correct answer!";
-            StartCoroutine(ClearAlertText());
-            return false;
+            if (toggleCheck.Count == 0) {
+                alertText.text = "Must specify at least 1 correct answer!";
+                StartCoroutine(ClearAlertText());
+                return false;
+            }
+        } else {
+            if (textFieldsList.Count == 0) {
+                alertText.text = "Must have at least 1 answer!";
+                StartCoroutine(ClearAlertText());
+                return false;
+            }
+            List<int> toggleCheck = new List<int>();
+            foreach (AnswerField answer in textFieldsList) {
+                if (string.IsNullOrEmpty(answer.answerTextField.text)) {
+                    alertText.text = "Cannot include blank answers!";
+                    StartCoroutine(ClearAlertText());
+                    return false;
+                }
+                if (answer.correctAnswerToggle.isOn) {
+                    toggleCheck.Add(1);
+                }
+            }
+            if (toggleCheck.Count == 0) {
+                alertText.text = "Must specify at least 1 correct answer!";
+                StartCoroutine(ClearAlertText());
+                return false;
+            }
         }
         return true;
     }

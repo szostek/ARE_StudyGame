@@ -200,11 +200,13 @@ public class GameManager : MonoBehaviour
             }
             if (q.type == "isTapOnImage") {
                 // questionCard.imageToTapPrefab = q.imageToTap;
+                Debug.Log("Has image answers: " + q.hasImageAnswers);
+                Debug.Log("Tap image path: " + q.tapImageFilePath);
                 questionCard.tapImagePath = q.tapImageFilePath;
                 questionCard.correctTapLocation = q.correctTapAreaPosition;
             }
             tempQuestionList.Remove(q);
-            Debug.Log("Remaining Questions: " + tempQuestionList.Count);
+            // Debug.Log("Remaining Questions: " + tempQuestionList.Count);
             currentCard = questionCard.gameObject;
         } else {
             Debug.Log("No more questions available!");

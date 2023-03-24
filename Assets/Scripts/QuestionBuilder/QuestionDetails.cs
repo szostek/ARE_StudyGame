@@ -22,6 +22,8 @@ public class QuestionDetails : MonoBehaviour
     private QBuilderManager builderManager;
     private CameraManager cameraManager;
 
+    private bool hasRemovePreviewImage = true;
+
     private void Awake() 
     {
         builderManager = GetComponent<QBuilderManager>();
@@ -39,9 +41,11 @@ public class QuestionDetails : MonoBehaviour
             builderManager.questionText = questionText.text;
             builderManager.questionDetailsText = questionDetailsText.text;
 
-            List<string> refimagePaths = cameraManager.SavePictures();
-            if (refimagePaths.Count > 0) {
-                builderManager.refImageFilePath = refimagePaths[0];
+            if (!hasRemovePreviewImage) {
+                List<string> refimagePaths = cameraManager.SavePictures();
+                if (refimagePaths.Count > 0) {
+                    builderManager.refImageFilePath = refimagePaths[0];
+                }
             }
         }
         if (builderManager.type == "isMultiChoice") {
@@ -57,6 +61,14 @@ public class QuestionDetails : MonoBehaviour
     {
         cameraManager.TakePicture(512, previewImage, 666);
         removeImageButton.gameObject.SetActive(true);
+        hasRemovePreviewImage = false;
+    }
+
+    public void UploadPhotoButton()
+    {
+        cameraManager.UploadPictureFromGallery(512, previewImage, 666);
+        removeImageButton.gameObject.SetActive(true);
+        hasRemovePreviewImage = false;
     }
 
     public void RemoveImageButton()
@@ -65,6 +77,7 @@ public class QuestionDetails : MonoBehaviour
         if (cameraManager.RemoveTempRefImage()) {            
             previewImage.sprite = null;
             removeImageButton.gameObject.SetActive(false);
+            hasRemovePreviewImage = true;
         } else {
             Debug.Log("no file to delete");
         }
