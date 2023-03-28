@@ -57,6 +57,9 @@ public class MultiCardController : MonoBehaviour
     private QBuilderManager builderManager;
     [HideInInspector] public bool isBuilderMode = false;
 
+    // Struggle Mode:
+    [HideInInspector] public bool isStruggleMode = false;
+
     private Button submitButton;    
     private List<Button> selectedButtons = new List<Button>();
     private List<Button> allAnswerButtons = new List<Button>();
@@ -208,7 +211,7 @@ public class MultiCardController : MonoBehaviour
 
     private void FinishQuestion(bool success)
     {
-        if (!gameManager.isChallengeMode) {
+        if (!gameManager.isChallengeMode && !isStruggleMode) {
             if (success) {
                 descriptionText.text = description;
                 retryButton.gameObject.SetActive(false);
@@ -220,13 +223,29 @@ public class MultiCardController : MonoBehaviour
                 wrongAnimator.SetTrigger("show");
             }
         } else {
-            if (success) {
-                gameManager.AddPoints();
+            if (isStruggleMode) {
+                if (success) {
+                    descriptionText.text = description;
+                    retryButton.gameObject.SetActive(false);
+                    finishedPanel.SetActive(true);
+                    correctAnimator.SetTrigger("show");
+                } else {
+                    descriptionText.text = "That's not quite correct.";
+                    finishedPanel.SetActive(true);
+                    wrongAnimator.SetTrigger("show");
+                }
             } else {
-                statusController.AddQuestionToStruggleList(qIndex);
+                if (success) {
+                    gameManager.AddPoints();
+                    if (statusController.isQuestionInStruggles(qIndex)) {
+                        statusController.RemoveQuestionFromStruggleList(qIndex);
+                    }
+                } else {
+                    statusController.AddQuestionToStruggleList(qIndex);
+                }
+                Next();
             }
-            Next();
-        }
+        }        
     }
 
     public void Retry()
@@ -237,7 +256,9 @@ public class MultiCardController : MonoBehaviour
     public void Next()
     {
         Destroy(gameObject);
-        gameManager.CreateQuestion();
+        if (!isStruggleMode) {
+            gameManager.CreateQuestion();
+        }
     }
 
     private void PopulateAnswerButtons() 

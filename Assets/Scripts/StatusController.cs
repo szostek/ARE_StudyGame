@@ -7,9 +7,11 @@ public class StatusController : MonoBehaviour
     [HideInInspector] public SaveObject so;
     [SerializeField] RectTransform scoreList;
     [SerializeField] ScoreItem scoreItemPrefab;
+    private StruggleList struggleList;
 
     private void Awake() 
     {
+        struggleList = GetComponent<StruggleList>();
         if (SaveManager.Load() == null) {
             SaveManager.Save(so);
         }
@@ -33,6 +35,9 @@ public class StatusController : MonoBehaviour
                 item.timeText.text = score.Value.timeScore;
                 item.scoreText.text = $"{score.Value.percScore}%";
             }
+        }
+        if (so.struggleList.Count > 0) {
+            struggleList.PopulateStruggles(so.struggleList);
         }
     }
 
@@ -80,6 +85,22 @@ public class StatusController : MonoBehaviour
 
     public void AddQuestionToStruggleList(int questionIndex)
     {
+        so.struggleList.Add(questionIndex);
+        SaveManager.Save(so);
+        struggleList.PopulateStruggles(so.struggleList);
         Debug.Log("Added " + questionIndex + " to struggle list!");
     }
+    public void RemoveQuestionFromStruggleList(int questionIndex)
+    {
+        so.struggleList.Remove(questionIndex);
+        SaveManager.Save(so);
+        struggleList.PopulateStruggles(so.struggleList);
+        Debug.Log("Removed " + questionIndex + " from struggle list!");
+    }
+
+    public bool isQuestionInStruggles(int qIndex)
+    {
+        return so.struggleList.Contains(qIndex);
+    }
+
 }

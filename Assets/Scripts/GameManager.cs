@@ -164,8 +164,46 @@ public class GameManager : MonoBehaviour
             tempQuestionList[i] = tempQuestionList[randomIndex];
             tempQuestionList[randomIndex] = temp;
         }
-        for (int i = ((int)selectedTimeInterval / 2) - 1; i < tempQuestionList.Count; i++) {
-            tempQuestionList.Remove(tempQuestionList[i]);
+        if (tempQuestionList.Count > (int)selectedTimeInterval / 2) {
+            for (int i = ((int)selectedTimeInterval / 2); i < tempQuestionList.Count; i++) {
+                tempQuestionList.Remove(tempQuestionList[i]);
+            }
+        }
+    }
+
+    // Called from the StruggleList when a struggle button is clicked...
+    public void CreateStrugglePreviewQuestion(int qIndex) 
+    {
+        SaveQuestionObject q = totalQuestionList[qIndex];
+        MultiCardController questionCard = Instantiate(multChoicePrefab, canvas);
+        questionCard.isStruggleMode = true;
+        questionCard.qIndex = q.questionIndex;
+        questionCard.questionType = q.type;
+        questionCard.question = q.questionText;
+        questionCard.description = q.questionDetailsText;
+        questionCard.instructions = q.instruction;
+        questionCard.hasImagesForAnswers = q.hasImageAnswers;
+        if (q.hasImageAnswers) {
+            Sprite[] images = new Sprite[q.imageAnswerFilePaths.Count];
+            for (int i = 0; i < q.imageAnswerFilePaths.Count; i++) {
+                images[i] = cameraManager.LoadImageFromPath(q.imageAnswerFilePaths[i]);
+            }
+            questionCard.imgAnswers = images;
+            questionCard.answerAmount = q.imageAnswerFilePaths.Count;
+        } else {
+            questionCard.answers = q.textAnswers;
+            questionCard.answerAmount = q.textAnswers.Length;
+        }
+        questionCard.correctAnswersList = q.correctAnswerIds;
+        if (!string.IsNullOrEmpty(q.refImageFilePath)) {
+            questionCard.imageRef = cameraManager.LoadImageFromPath(q.refImageFilePath);
+        }
+        if (q.correctAnswerIds.Count > 1) {
+            questionCard.hasMultAnswers = true;
+        }
+        if (q.type == "isTapOnImage") {
+            questionCard.tapImagePath = q.tapImageFilePath;
+            questionCard.correctTapLocation = q.correctTapAreaPosition;
         }
     }
 

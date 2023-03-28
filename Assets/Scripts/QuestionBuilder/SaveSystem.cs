@@ -38,12 +38,6 @@ public static class SaveSystem
         }
 
         // Load all built-in questions here:
-        // DirectoryInfo builtInQuestionDir = new DirectoryInfo(questionsFolderPath);
-        // FileInfo[] builtInQuestions = builtInQuestionDir.GetFiles("*.txt");
-        // foreach (FileInfo qInfo in builtInQuestions) {
-        //     string qString = File.ReadAllText(qInfo.FullName);
-        //     questionList.Add(qString);
-        // }
         TextAsset[] questionFiles = Resources.LoadAll("Questions", typeof(TextAsset)).Cast<TextAsset>().ToArray();
         foreach (TextAsset qInfo in questionFiles) {
             string qString = qInfo.text;

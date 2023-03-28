@@ -4847,7 +4847,15 @@ MonoBehaviour:
   - {fileID: 1910124923}
   - {fileID: 1807558536}
   refImagePreview: {fileID: 499754042}
+  questionField: {fileID: 724312137}
+  descriptionField: {fileID: 1645613628}
+  answerFieldListContent: {fileID: 1066012976}
+  fillInBlankField: {fileID: 1268692464}
   tapImagePreview: {fileID: 3189957618420134472}
+  alertTexts:
+  - {fileID: 322442921}
+  - {fileID: 642639703}
+  - {fileID: 1698615490}
 --- !u!114 &485973625
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4882,6 +4890,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tempImagePaths: []
+  tempTapImagePath: 
 --- !u!114 &485973627
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8081,6 +8090,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b355278527138144852001dfaad795a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  so:
+    struggleList: 
   scoreList: {fileID: 896206780}
   scoreItemPrefab: {fileID: 3181381200935318684, guid: 8583cf34447630c47b96c12098ae9112,
     type: 3}

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class QBuilderManager : MonoBehaviour
 {
@@ -22,7 +23,13 @@ public class QBuilderManager : MonoBehaviour
     [Header("UI References:")]
     [SerializeField] GameObject[] builderMenus;
     [SerializeField] Image refImagePreview;
+    [SerializeField] TMP_InputField questionField;
+    [SerializeField] TMP_InputField descriptionField;
+    [SerializeField] RectTransform answerFieldListContent;
+    private AnswerFieldList answerFieldList;
+    [SerializeField] TMP_InputField fillInBlankField;
     [SerializeField] Image tapImagePreview;
+    [SerializeField] TMP_Text[] alertTexts;
 
     private CameraManager cameraManager;
     private GameManager gameManager;
@@ -30,6 +37,7 @@ public class QBuilderManager : MonoBehaviour
     private void Awake() 
     {
         cameraManager = GetComponent<CameraManager>();
+        answerFieldList = GetComponent<AnswerFieldList>();
         gameManager = FindObjectOfType<GameManager>();
     }
 
@@ -64,7 +72,7 @@ public class QBuilderManager : MonoBehaviour
 
         refImagePreview.sprite = null;
         gameManager.InitiateTotalQuestions();
-        ResetAllInternalVars();
+        
     }
 
     public void HideAllBuilderMenus()
@@ -74,11 +82,20 @@ public class QBuilderManager : MonoBehaviour
         foreach (GameObject menu in builderMenus) {
             menu.SetActive(false);
         }
+        questionField.text = "";
+        descriptionField.text = "";
+        fillInBlankField.text = "";
+        foreach (RectTransform item in answerFieldListContent) {
+            Destroy(item.gameObject);
+        }
+        answerFieldList.ResetAnswerListToDefault();
+        foreach (TMP_Text alert in alertTexts) {
+            alert.text = "";
+        }
         cameraManager.RemoveAllTempImages();
         cameraManager.RemoveTempTapImageIfValid();
+        ResetAllInternalVars();
     }
-
-    //Ideally if the user goes home without finishing question, the internal vars get cleared, and all text fields, etc.
 
     public void ResetAllInternalVars()
     {
@@ -96,7 +113,7 @@ public class QBuilderManager : MonoBehaviour
         correctTapAreaPosition = new Vector2(0, 0);
         tapImageFilePath = "";
     }
-
+    
 
 }
 

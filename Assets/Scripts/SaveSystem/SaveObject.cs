@@ -4,6 +4,7 @@ using System.Collections.Generic;
 public class SaveObject
 {
     public Dictionary<int, ScoreTemplate> scores = new Dictionary<int, ScoreTemplate>();
+    public List<int> struggleList = new List<int>();
 }
 
 [System.Serializable]

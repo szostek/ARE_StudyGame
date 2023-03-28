@@ -57,6 +57,11 @@ public class AnswerFieldList : MonoBehaviour
 
     }
 
+    public void ResetAnswerListToDefault()
+    {
+        AddTextFieldAnswers();
+    }
+
     private void AddTextFieldAnswers()
     {        
         RemoveListItems();
