@@ -48,6 +48,13 @@ public class AnswerTapImage : MonoBehaviour
         }
     }
 
+    public void PopulateTapImageEditMode()
+    {
+        Image imagePreview = tapImage.GetComponent<Image>();
+        imagePreview.sprite = cameraManager.LoadImageFromPath(builderManager.tapImageFilePath);
+        tapImage.ShowCurrentAreaMarkerEditMode();
+    }
+
     public void ShowPreviewCard()
     {
         SaveTapImage();

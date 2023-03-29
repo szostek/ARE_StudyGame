@@ -8,6 +8,7 @@ public class CategoryChooser : MonoBehaviour
     [Header("References:")]
     [SerializeField] bCategoryButton categoryButtonPrefab;
     [SerializeField] RectTransform categoryChooserList;
+    private List<bCategoryButton> buttonList = new List<bCategoryButton>();
     public RectTransform content;
     public Color[] backgroundColors;
     public Button nextButton;
@@ -16,7 +17,7 @@ public class CategoryChooser : MonoBehaviour
     private QBuilderManager builderManager;
     public GameManager gameManager;
 
-    private string[] acronyms = new string[] {"PcM", "PjM", "PA", "PPD", "PDD", "CE"};
+    [HideInInspector] public string[] acronyms = new string[] {"PcM", "PjM", "PA", "PPD", "PDD", "CE"};
     private string[] titles = new string[] 
     {
         "Practice Management",
@@ -41,6 +42,7 @@ public class CategoryChooser : MonoBehaviour
             button.titleText.text = titles[i];
             button.acronymText.text = acronyms[i];
             button.buttonId = i;
+            buttonList.Add(button);
         }
     }
 

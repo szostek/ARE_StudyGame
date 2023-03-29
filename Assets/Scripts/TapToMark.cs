@@ -38,6 +38,13 @@ public class TapToMark : MonoBehaviour, IPointerClickHandler
         }
     }
 
+    public void ShowCurrentAreaMarkerEditMode()
+    {
+        currentAreaMarker = Instantiate(correctAreaPrefab, rectTransform);
+        currentAreaMarker.GetComponent<Image>().enabled = false;
+        currentAreaMarker.transform.localPosition = builderManager.correctTapAreaPosition;
+    }
+
     public void OnPointerClick(PointerEventData eventData)
     {
         // Get the position of the tap on the image

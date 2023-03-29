@@ -6,6 +6,7 @@ using TMPro;
 
 public class QBuilderManager : MonoBehaviour
 {
+    public bool isEditMode = false;
     [HideInInspector] public int questionIndex;
     [HideInInspector] public int categoryIndex;
     [HideInInspector] public string type;
@@ -49,9 +50,10 @@ public class QBuilderManager : MonoBehaviour
                 imageAnswerFilePaths = refimagePaths;
             }
         }
-        questionIndex = gameManager.TotalQuestions() + 1;
+        if (!isEditMode) {
+            questionIndex = gameManager.TotalQuestions() + 1;
+        }
         cameraManager.tempTapImagePath = "";
-
         SaveQuestionObject saveObject = new SaveQuestionObject {
             questionIndex = questionIndex,
             categoryIndex = categoryIndex,
@@ -66,12 +68,14 @@ public class QBuilderManager : MonoBehaviour
             correctAnswerIds = correctAnswerIds,
             correctTapAreaPosition = correctTapAreaPosition,
             tapImageFilePath = tapImageFilePath,
+            isUserCreated = true,
         };
         string json = JsonUtility.ToJson(saveObject);
         SaveSystem.SaveQuestion(json, questionIndex);
 
         refImagePreview.sprite = null;
         gameManager.InitiateTotalQuestions();
+        // HideAllBuiderMenus function below is called from the gameManager after a couple seconds..
         
     }
 
@@ -95,6 +99,7 @@ public class QBuilderManager : MonoBehaviour
         cameraManager.RemoveAllTempImages();
         cameraManager.RemoveTempTapImageIfValid();
         ResetAllInternalVars();
+        isEditMode = false;
     }
 
     public void ResetAllInternalVars()
@@ -133,4 +138,5 @@ public class SaveQuestionObject
     public List<int> correctAnswerIds;
     public Vector2 correctTapAreaPosition;
     public string tapImageFilePath;
+    public bool isUserCreated;
 }

@@ -81,7 +81,15 @@ public class QuestionDetails : MonoBehaviour
         } else {
             Debug.Log("no file to delete");
         }
+    }
 
+    public void PopulateDetailsEditMode()
+    {
+        questionText.text = builderManager.questionText;
+        questionDetailsText.text = builderManager.questionDetailsText;
+        previewImage.sprite = cameraManager.LoadImageFromPath(builderManager.refImageFilePath);
+        // removeImageButton.gameObject.SetActive(true);
+        hasRemovePreviewImage = true; // Setting this to true, wont resave the path in the builder manager, just keep the old one
     }
 
 }

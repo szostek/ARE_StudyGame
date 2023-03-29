@@ -6,12 +6,11 @@ using UnityEngine;
 public class QConverter : MonoBehaviour
 {
     // How to use:
-    // Copy all question .txt files from the mobile device or computer persistant data path, and drag them into the editor in the folder below.
+    // Copy all question .txt files and images from the mobile device or computer persistant data path, and drag them into the editor in the folder below.
     // Hit the convert button, and all image file paths should be updated
 
     public void CovertFiles()
     {
-        
         string questionsFolderPath = $"{Application.dataPath}/Resources/Questions/";
         string newImageFolderPath = $"{Application.dataPath}/Resources/Images/"; 
         DirectoryInfo directoryInfo = new DirectoryInfo(questionsFolderPath);
@@ -19,6 +18,7 @@ public class QConverter : MonoBehaviour
         foreach (FileInfo question in savedQuestions) {
             string saveString = File.ReadAllText(question.FullName);
             SaveQuestionObject saveObject = JsonUtility.FromJson<SaveQuestionObject>(saveString);
+            saveObject.isUserCreated = false;
             if (!string.IsNullOrEmpty(saveObject.refImageFilePath)) {
                 string fileName = Path.GetFileName(saveObject.refImageFilePath);
                 saveObject.refImageFilePath = newImageFolderPath + fileName;

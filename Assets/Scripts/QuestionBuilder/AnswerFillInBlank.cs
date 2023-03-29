@@ -6,7 +6,7 @@ using TMPro;
 
 public class AnswerFillInBlank : MonoBehaviour
 {
-    [SerializeField] TMP_InputField fillInBlankField;
+    public TMP_InputField fillInBlankField;
     [SerializeField] TMP_Text alertText;
 
     // Card is used for question preview. Show this before saving question:
@@ -22,6 +22,11 @@ public class AnswerFillInBlank : MonoBehaviour
         builderManager = GetComponent<QBuilderManager>();
         cameraManager = GetComponent<CameraManager>();
         gameManager = FindObjectOfType<GameManager>();
+    }
+
+    public void PopulateAnswerEditMode()
+    {
+        fillInBlankField.text = builderManager.textAnswers[0];
     }
 
     public void ShowPreviewCard()

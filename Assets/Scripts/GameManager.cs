@@ -45,12 +45,14 @@ public class GameManager : MonoBehaviour
     private float totalPoints;
     private StatusController statusController;
     private CameraManager cameraManager;
+    public CustomQList customQList;
 
     private void Awake() 
     {
         InitiateTotalQuestions();
         statusController = GetComponent<StatusController>();
         cameraManager = FindObjectOfType<CameraManager>();
+        // customQList = FindObjectOfType<CustomQList>();
     }
 
     public void StartGame()
@@ -266,10 +268,10 @@ public class GameManager : MonoBehaviour
         totalQuestionList.Clear();
         tempQuestionList.Clear();
         ClearAllCategoryLists();
-        List<string> allQuestions = new List<string>();
-        allQuestions = SaveSystem.LoadAllQuestions();
-        if (allQuestions != null) {
-            foreach (string qString in allQuestions) {
+        List<string> loadedQuestions = new List<string>();
+        loadedQuestions = SaveSystem.LoadAllQuestions();
+        if (loadedQuestions != null) {
+            foreach (string qString in loadedQuestions) {
                 SaveQuestionObject saveObject = JsonUtility.FromJson<SaveQuestionObject>(qString);
                 totalQuestionList.Add(saveObject);
                 if (saveObject.categoryIndex == 0) {
@@ -286,12 +288,14 @@ public class GameManager : MonoBehaviour
                     ceQuestions.Add(saveObject);
                 }
             }
-            Debug.Log("Total num of questions: " + allQuestions.Count);
+            Debug.Log("Total num of questions: " + loadedQuestions.Count);
             Debug.Log("Total q's in PcM category: " + pcmQuestions.Count);
             for (int i = 0; i < totalQuestionList.Count; i++) {
                 SaveQuestionObject q = totalQuestionList[i];
                 q.questionIndex = i;
             }
+            customQList.allQuestions = totalQuestionList;
+            customQList.PopulateCustomQs();
         }
     }
 

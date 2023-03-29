@@ -53,8 +53,24 @@ public class AnswerFieldList : MonoBehaviour
             textFieldsList.Clear();
             AddImageAnswers();
             toggled = false;
-        }
+        }        
+    }
 
+    public void PopulateAnswersEditMode()
+    {
+        if (builderManager.hasImageAnswers) {
+            answerTypeSwitch.SetSwitchOn(true, false);
+            hasImageAnswers = true;
+            textFieldsList.Clear();
+            AddImageAnswers();
+            answerTypeSwitch.enabled = false;
+        } else {
+            hasImageAnswers = false;
+            imageFieldsList.Clear();
+            cameraManager.RemoveAllTempImages();
+            AddTextFieldAnswers();
+            answerTypeSwitch.enabled = false;
+        }
     }
 
     public void ResetAnswerListToDefault()
@@ -65,8 +81,9 @@ public class AnswerFieldList : MonoBehaviour
     private void AddTextFieldAnswers()
     {        
         RemoveListItems();
-        for (int i = 0; i < 2; i++) {
-            AddTextFieldItem();
+        int amount = builderManager.isEditMode ? builderManager.textAnswers.Length : 2;
+        for (int i = 0; i < amount; i++) {
+            AddTextFieldItem(builderManager.isEditMode ? builderManager.textAnswers[i] : "");
         }
         ApplyFieldIds();
         AddNewAnswerButton();
@@ -74,26 +91,32 @@ public class AnswerFieldList : MonoBehaviour
     private void AddImageAnswers()
     {
         RemoveListItems();
-        for (int i = 0; i < 2; i++) {
-            AddImageFieldItem();
+        int amount = builderManager.isEditMode ? builderManager.imageAnswerFilePaths.Count : 2;
+        for (int i = 0; i < amount; i++) {
+            AddImageFieldItem(builderManager.isEditMode ? builderManager.imageAnswerFilePaths[i] : "");
         }
         ApplyFieldIds();
         AddNewAnswerButton();
     }
 
-    private void AddTextFieldItem()
+    private void AddTextFieldItem(string answerText)
     {
         AnswerField field = Instantiate(answerFieldPrefab, answerFieldList);
         field.answerFieldList = this;
+        field.answerTextField.text = answerText;
         textFieldsList.Add(field);
-        
     }
-    private void AddImageFieldItem()
+
+    private void AddImageFieldItem(string imgPath)
     {
         AnswerImage field = Instantiate(answerImagePrefab, answerFieldList);
         field.answerFieldList = this;
         field.cameraManager = cameraManager;
         field.gameManager = gameManager;
+        // If in edit move, load the current image for this field:
+        if (!string.IsNullOrEmpty(imgPath)) {
+            field.previewImage.sprite = cameraManager.LoadImageFromPath(imgPath);
+        }
         imageFieldsList.Add(field);  
     }
 
@@ -104,9 +127,9 @@ public class AnswerFieldList : MonoBehaviour
         button.onClick.AddListener(() => {
             Destroy(addFieldButton.gameObject);
             if (hasImageAnswers) {
-                AddImageFieldItem();
+                AddImageFieldItem("");
             } else {
-                AddTextFieldItem();
+                AddTextFieldItem("");
             }
             AddNewAnswerButton();
         });
@@ -124,6 +147,14 @@ public class AnswerFieldList : MonoBehaviour
         } else {
             for (int i = 0; i < textFieldsList.Count; i++) {
                 textFieldsList[i].fieldId = i;
+            }
+            if (builderManager.isEditMode) {
+                foreach (AnswerField field in textFieldsList) {
+                    if (builderManager.correctAnswerIds.Contains(field.fieldId)) {
+                        field.correctAnswerToggle.isOn = true;
+                        Debug.Log(field.fieldId + " Should be true");
+                    }
+                }
             }
         }
     }
