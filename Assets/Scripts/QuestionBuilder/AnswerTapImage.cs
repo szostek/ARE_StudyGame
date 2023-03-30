@@ -52,7 +52,7 @@ public class AnswerTapImage : MonoBehaviour
     {
         Image imagePreview = tapImage.GetComponent<Image>();
         imagePreview.sprite = cameraManager.LoadImageFromPath(builderManager.tapImageFilePath);
-        tapImage.ShowCurrentAreaMarkerEditMode();
+        tapImage.ShowCurrentAreaMarkerEditMode(builderManager.correctTapAreaPosition);
     }
 
     public void ShowPreviewCard()

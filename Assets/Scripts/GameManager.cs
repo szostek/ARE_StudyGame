@@ -290,10 +290,10 @@ public class GameManager : MonoBehaviour
             }
             Debug.Log("Total num of questions: " + loadedQuestions.Count);
             Debug.Log("Total q's in PcM category: " + pcmQuestions.Count);
-            for (int i = 0; i < totalQuestionList.Count; i++) {
-                SaveQuestionObject q = totalQuestionList[i];
-                q.questionIndex = i;
-            }
+            // for (int i = 0; i < totalQuestionList.Count; i++) {
+            //     SaveQuestionObject q = totalQuestionList[i];
+            //     q.questionIndex = i;
+            // }
             customQList.allQuestions = totalQuestionList;
             customQList.PopulateCustomQs();
         }

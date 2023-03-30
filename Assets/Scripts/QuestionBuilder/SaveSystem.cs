@@ -50,4 +50,13 @@ public static class SaveSystem
             return null;
         }
     }
+
+    public static void DeleteQuestion(int questionIndex)
+    {
+        if (File.Exists(SAVE_FOLDER + $"/Question_{questionIndex}.txt")) {
+            File.Delete(SAVE_FOLDER + $"/Question_{questionIndex}.txt");
+        } else {
+            Debug.Log("File to delete couldn't be found...");
+        }
+    }
 }

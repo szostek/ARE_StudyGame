@@ -4,6 +4,8 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.IO;
+using System;
 
 public class AnswerFieldList : MonoBehaviour
 {
@@ -41,6 +43,12 @@ public class AnswerFieldList : MonoBehaviour
 
     private void Update() 
     {
+        if (builderManager.isEditMode) {
+            // answerTypeSwitch.gameObject.SetActive(false);
+            return;
+        } else {
+            answerTypeSwitch.gameObject.SetActive(true);
+        }
         if (!answerTypeSwitch.isOn && !toggled) {
             hasImageAnswers = false;
             imageFieldsList.Clear();
@@ -59,18 +67,21 @@ public class AnswerFieldList : MonoBehaviour
     public void PopulateAnswersEditMode()
     {
         if (builderManager.hasImageAnswers) {
-            answerTypeSwitch.SetSwitchOn(true, false);
+            // answerTypeSwitch.SetSwitchOn(true, false);
             hasImageAnswers = true;
+            imageFieldsList.Clear();
             textFieldsList.Clear();
             AddImageAnswers();
-            answerTypeSwitch.enabled = false;
         } else {
+            // answerTypeSwitch.isOn = false;
+            // answerTypeSwitch.SetSwitchOn(false, false);
             hasImageAnswers = false;
             imageFieldsList.Clear();
+            textFieldsList.Clear();
             cameraManager.RemoveAllTempImages();
             AddTextFieldAnswers();
-            answerTypeSwitch.enabled = false;
         }
+        answerTypeSwitch.gameObject.SetActive(false);
     }
 
     public void ResetAnswerListToDefault()
@@ -142,7 +153,14 @@ public class AnswerFieldList : MonoBehaviour
         if (hasImageAnswers) {
             for (int i = 0; i < imageFieldsList.Count; i++) {
                 imageFieldsList[i].fieldId = i;
-                Debug.Log(i);
+            }
+            if (builderManager.isEditMode) {
+                foreach (AnswerImage field in imageFieldsList) {
+                    if (builderManager.correctAnswerIds.Contains(field.fieldId) && field.correctAnswerToggle.isOn == false) {
+                        field.correctAnswerToggle.SetIsOnWithoutNotify(true);
+                        // Debug.Log(field.fieldId + " Should be true");
+                    }  
+                }
             }
         } else {
             for (int i = 0; i < textFieldsList.Count; i++) {
@@ -150,9 +168,9 @@ public class AnswerFieldList : MonoBehaviour
             }
             if (builderManager.isEditMode) {
                 foreach (AnswerField field in textFieldsList) {
-                    if (builderManager.correctAnswerIds.Contains(field.fieldId)) {
-                        field.correctAnswerToggle.isOn = true;
-                        Debug.Log(field.fieldId + " Should be true");
+                    if (builderManager.correctAnswerIds.Contains(field.fieldId) && field.correctAnswerToggle.isOn == false) {
+                        field.correctAnswerToggle.SetIsOnWithoutNotify(true);
+                        // Debug.Log(field.fieldId + " Should be true");
                     }
                 }
             }
@@ -165,9 +183,17 @@ public class AnswerFieldList : MonoBehaviour
         if (hasImageAnswers) {
             Destroy(imageFieldsList[fieldId].gameObject);
             imageFieldsList.RemoveAt(fieldId);
+            if (builderManager.isEditMode) {
+                builderManager.imageAnswerFilePaths.RemoveAt(fieldId);
+            }
         } else {
             Destroy(textFieldsList[fieldId].gameObject);
             textFieldsList.RemoveAt(fieldId);
+            if (builderManager.isEditMode) {
+                List<string> textAnswerList = new List<string>(builderManager.textAnswers);
+                textAnswerList.RemoveAt(fieldId);
+                builderManager.textAnswers = textAnswerList.ToArray();
+            }
         }
         ApplyFieldIds();
     }
@@ -187,14 +213,40 @@ public class AnswerFieldList : MonoBehaviour
         previewCard.isBuilderMode = true;
         previewCard.questionType = builderManager.type;
         previewCard.hasImagesForAnswers = hasImageAnswers;
-        previewCard.qIndex = gameManager.TotalQuestions() + 1;
+        previewCard.qIndex = builderManager.isEditMode ? builderManager.questionIndex : gameManager.TotalQuestions() + 1;
         previewCard.question = builderManager.questionText;
         previewCard.instructions = builderManager.instruction;
         if (hasImageAnswers) {
             correctAnswerIds = new List<int>();
-            Sprite[] images = new Sprite[cameraManager.tempImagePaths.Count];
-            for (int i = 0; i < cameraManager.tempImagePaths.Count; i++) {
-                images[i] = cameraManager.LoadImageFromPath(cameraManager.tempImagePaths[i]);
+            int amount = builderManager.isEditMode ? builderManager.imageAnswerFilePaths.Count : cameraManager.tempImagePaths.Count;
+            Sprite[] images = new Sprite[amount];
+            for (int i = 0; i < amount; i++) {
+                // if (cameraManager.tempImagePaths.Count > 0) {
+                //     if (Path.GetFileName(cameraManager.tempImagePaths[i]) == Path.GetFileName(builderManager.imageAnswerFilePaths[i])) {
+                //         // If the files above have the same name, then the user has updated an image
+                //         images[i] = cameraManager.LoadImageFromPath(cameraManager.tempImagePaths[i]);
+                //         pathCounter--;
+                //     } else {
+                //         images[i] = cameraManager.LoadImageFromPath(builderManager.imageAnswerFilePaths[i]);
+                //     }
+                // } else {
+                //     images[i] = cameraManager.LoadImageFromPath(builderManager.imageAnswerFilePaths[i]);
+                // }
+                if (!builderManager.isEditMode) {
+                    images[i] = cameraManager.LoadImageFromPath(cameraManager.tempImagePaths[i]);
+                } else {
+                    if (cameraManager.tempImagePaths.Count > 0) {
+                        foreach (string path in cameraManager.tempImagePaths) {
+                            if (Path.GetFileName(path) == Path.GetFileName(builderManager.imageAnswerFilePaths[i])) {
+                                images[i] = cameraManager.LoadImageFromPath(cameraManager.tempImagePaths[i]);
+                            } else {
+                                images[i] = cameraManager.LoadImageFromPath(builderManager.imageAnswerFilePaths[i]);
+                            }
+                        }
+                    } else {
+                        images[i] = cameraManager.LoadImageFromPath(builderManager.imageAnswerFilePaths[i]);
+                    }
+                }
             }
             for (int i = 0; i < imageFieldsList.Count; i++) {
                 // correctAnswerIds.Add(imageFieldsList[i].correctAnswerToggle.isOn ? 1: 0);

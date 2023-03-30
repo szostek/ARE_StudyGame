@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.IO;
 
 public class QBuilderManager : MonoBehaviour
 {
@@ -29,7 +30,7 @@ public class QBuilderManager : MonoBehaviour
     [SerializeField] RectTransform answerFieldListContent;
     private AnswerFieldList answerFieldList;
     [SerializeField] TMP_InputField fillInBlankField;
-    [SerializeField] Image tapImagePreview;
+    [SerializeField] TapToMark tapImagePreview;
     [SerializeField] TMP_Text[] alertTexts;
 
     private CameraManager cameraManager;
@@ -45,12 +46,24 @@ public class QBuilderManager : MonoBehaviour
     public void SaveQuestion()
     {
         if (hasImageAnswers) {
-            List<string> refimagePaths = cameraManager.SavePictures();
-            if (refimagePaths.Count > 0) {
-                imageAnswerFilePaths = refimagePaths;
+            List<string> savedImagePaths = cameraManager.SavePictures();
+            if (savedImagePaths.Count > 0) {
+                if (isEditMode) {
+                    for (int i = 0; i < imageAnswerFilePaths.Count; i++) {
+                        foreach (string path in savedImagePaths) {
+                            if (Path.GetFileName(imageAnswerFilePaths[i]) == Path.GetFileName(path)) {
+                                // User has updated the image, save the current path as the new path:
+                                imageAnswerFilePaths[i] = path;
+                            }
+                        }
+                    }
+                } else {
+                    imageAnswerFilePaths = savedImagePaths;
+                }
             }
         }
         if (!isEditMode) {
+            Debug.Log("SHOULDNT SEE THIS IF YOURE IN EDIT MODE...");
             questionIndex = gameManager.TotalQuestions() + 1;
         }
         cameraManager.tempTapImagePath = "";
@@ -82,7 +95,13 @@ public class QBuilderManager : MonoBehaviour
     public void HideAllBuilderMenus()
     {
         refImagePreview.sprite = null;
-        tapImagePreview.sprite = null;
+        tapImagePreview.gameObject.GetComponent<Image>().sprite = null;
+        if (tapImagePreview.gameObject.transform.GetChild(0) != null) {
+            tapImagePreview.gameObject.transform.GetChild(0).gameObject.SetActive(false);
+        }
+        tapImagePreview.isBuilder = true;
+        tapImagePreview.hasUploadedTapImage = false;        
+
         foreach (GameObject menu in builderMenus) {
             menu.SetActive(false);
         }
@@ -100,6 +119,7 @@ public class QBuilderManager : MonoBehaviour
         cameraManager.RemoveTempTapImageIfValid();
         ResetAllInternalVars();
         isEditMode = false;
+        Debug.Log("Edit Mode: " + isEditMode);
     }
 
     public void ResetAllInternalVars()

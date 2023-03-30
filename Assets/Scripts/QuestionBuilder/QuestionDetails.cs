@@ -87,7 +87,9 @@ public class QuestionDetails : MonoBehaviour
     {
         questionText.text = builderManager.questionText;
         questionDetailsText.text = builderManager.questionDetailsText;
-        previewImage.sprite = cameraManager.LoadImageFromPath(builderManager.refImageFilePath);
+        if (!string.IsNullOrEmpty(builderManager.refImageFilePath)) {
+            previewImage.sprite = cameraManager.LoadImageFromPath(builderManager.refImageFilePath);
+        }
         // removeImageButton.gameObject.SetActive(true);
         hasRemovePreviewImage = true; // Setting this to true, wont resave the path in the builder manager, just keep the old one
     }

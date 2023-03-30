@@ -21,6 +21,6 @@ public class CustomQButton : MonoBehaviour
 
     public void DeleteButton()
     {
-        customQList.DeleteQuestion(questionId);
+        customQList.ConfirmDeleteQuestion(questionId);
     }
 }

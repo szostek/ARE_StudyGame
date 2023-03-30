@@ -24,11 +24,11 @@ public class CameraManager : MonoBehaviour
             {
                 int curQuestionNum = builderManager.questionIndex;
                 int fileExt = index;
-                string directory = Application.persistentDataPath + "/TempImages";
+                string directory = Path.Combine(Application.persistentDataPath, "TempImages");
                 if (!Directory.Exists(directory)) {
                     Directory.CreateDirectory(directory);
                 }
-                string tempPath = $"{directory}/image_{curQuestionNum}_{fileExt}.jpg";
+                string tempPath = Path.Combine(directory, $"image_{curQuestionNum}_{fileExt}.jpg");
                 FileInfo newFile = new FileInfo(tempPath);
                 // while (newFile.Exists) {
                 //     fileExt++;
@@ -63,11 +63,11 @@ public class CameraManager : MonoBehaviour
             {
                 int curQuestionNum = builderManager.questionIndex;
                 int fileExt = index;
-                string directory = Application.persistentDataPath + "/TempImages";
+                string directory = Path.Combine(Application.persistentDataPath, "TempImages");
                 if (!Directory.Exists(directory)) {
                     Directory.CreateDirectory(directory);
                 }
-                string tempPath = $"{directory}/image_{curQuestionNum}_{fileExt}.jpg";
+                string tempPath = Path.Combine(directory, $"image_{curQuestionNum}_{fileExt}.jpg");
                 FileInfo newFile = new FileInfo(tempPath);
                 // while (newFile.Exists) {
                 //     fileExt++;
@@ -96,14 +96,14 @@ public class CameraManager : MonoBehaviour
 
     public List<string> SavePictures()
     {
-        string directory = Application.persistentDataPath + "/CustomImages";
+        string directory = Path.Combine(Application.persistentDataPath, "CustomImages");
         if (!Directory.Exists(directory)) {
             Directory.CreateDirectory(directory);
         }
         List<string> newPaths = new List<string>();
         foreach (string path in tempImagePaths) {
             FileInfo file = new FileInfo(path);
-            string newPath = $"{directory}/{file.Name}";
+            string newPath = Path.Combine(directory, file.Name);
 
             // if a file with same name exists, delete and replace it:
             FileInfo newFile = new FileInfo(newPath);
@@ -131,7 +131,7 @@ public class CameraManager : MonoBehaviour
         if (path.Contains("Resources")) {
             string fileName = Path.GetFileNameWithoutExtension(path);
             Debug.Log(fileName);
-            Sprite sprite = Resources.Load<Sprite>($"Images/{fileName}");
+            Sprite sprite = Resources.Load<Sprite>(Path.Combine("Images", fileName));
             return sprite;
         } else {
             Texture2D texture = NativeCamera.LoadImageAtPath( path, 512 );
@@ -145,7 +145,7 @@ public class CameraManager : MonoBehaviour
         }
     }
 
-    //Make a function to delete all temp photos if user goes home
+    //Deletes all temp photos if user goes home
     public void RemoveAllTempImages()
     {
         if (tempImagePaths.Count > 0) {
@@ -173,5 +173,34 @@ public class CameraManager : MonoBehaviour
         if (string.IsNullOrEmpty(tempTapImagePath)) return;
         File.Delete(tempTapImagePath);
     }
+
+    public void DeleteQuestionImages(int qIndex)
+    {
+        string folderPath = Path.Combine(Application.persistentDataPath, "CustomImages");
+        if (Directory.Exists(folderPath))
+        {
+            // Get all files in the folder
+            string[] files = Directory.GetFiles(folderPath);
+
+            // Iterate through all files
+            foreach (string file in files)
+            {
+                // Get the file name without the extension
+                string fileName = Path.GetFileNameWithoutExtension(file);
+
+                // Check if the file name contains the int value
+                if (fileName.Contains($"_{qIndex}_"))
+                {
+                    // Delete the file
+                    File.Delete(file);
+                }
+            }
+        }
+        else
+        {
+            Debug.LogWarning("CustomImages folder not found.");
+        }
+    }
+
 
 }

@@ -13,8 +13,14 @@ public class CustomQList : MonoBehaviour
     [Header("Builder UI Refs:")]
     [SerializeField] GameObject questionDetailsPanel;
     private QuestionDetails questionDetails;
+    [SerializeField] GameObject deleteQuestionPanel;
+    [SerializeField] Button confirmDeleteButton;
+    [SerializeField] Button nevermindButton;
+    [SerializeField] TMP_Text alertQuestionDeletedText;
 
     [HideInInspector] public List<SaveQuestionObject> allQuestions = new List<SaveQuestionObject>();
+    public GameManager gameManager;
+    private CameraManager cameraManager;
     private QBuilderManager builderManager;
     private CategoryChooser categoryChooser;
     private AnswerFieldList answerFieldList;
@@ -29,6 +35,7 @@ public class CustomQList : MonoBehaviour
         answerFieldList = GetComponent<AnswerFieldList>();
         answerFillInBlank = GetComponent<AnswerFillInBlank>();
         answerTapImage = GetComponent<AnswerTapImage>();
+        cameraManager = GetComponent<CameraManager>();
     }
 
     // Called from gameManager when questions are loaded:
@@ -42,6 +49,7 @@ public class CustomQList : MonoBehaviour
             foreach (SaveQuestionObject question in allQuestions) {
                 if (question.isUserCreated) {
                     CustomQButton item = Instantiate(customQButtonPrefab, customQuestionList);
+                    item.questionId = question.questionIndex;
                     item.abbrevQuestionText.text = question.questionText.Length <= 32 ? question.questionText : question.questionText.Substring(0, 32) + "..";
                     item.categoryText.text = "Category: " + categoryChooser.acronyms[question.categoryIndex];
                     item.qIndexText.text = "Q# " + question.questionIndex;
@@ -57,7 +65,11 @@ public class CustomQList : MonoBehaviour
     public void EditQuestion(int qIndex)
     {
         builderManager.isEditMode = true;
-        PopulateQuestionInfo(allQuestions[qIndex]);
+        foreach (SaveQuestionObject q in allQuestions) {
+            if (q.questionIndex == qIndex) {
+                PopulateQuestionInfo(q);
+            }
+        }
         Debug.Log("Editing question: " + qIndex);
     }
 
@@ -90,8 +102,33 @@ public class CustomQList : MonoBehaviour
         }
     }
 
+    public void ConfirmDeleteQuestion(int qIndex)
+    {
+        deleteQuestionPanel.SetActive(true);
+        confirmDeleteButton.onClick.AddListener(() => {
+            confirmDeleteButton.interactable = false;
+            nevermindButton.interactable = false;
+            DeleteQuestion(qIndex);
+        });
+    }
+
     public void DeleteQuestion(int qIndex)
     {
+        SaveSystem.DeleteQuestion(qIndex);
+        cameraManager.DeleteQuestionImages(qIndex);
+        gameManager.InitiateTotalQuestions();
         Debug.Log("Deleting question: " + qIndex);
+        alertQuestionDeletedText.gameObject.SetActive(true);
+        StartCoroutine(HideDeletePanel());
     }
+
+    IEnumerator HideDeletePanel()
+    {
+        yield return new WaitForSeconds(1.5f);
+        confirmDeleteButton.interactable = true;
+        nevermindButton.interactable = true;
+        alertQuestionDeletedText.gameObject.SetActive(false);
+        deleteQuestionPanel.SetActive(false);
+    }
+
 }

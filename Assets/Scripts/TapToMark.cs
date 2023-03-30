@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 public class TapToMark : MonoBehaviour, IPointerClickHandler
 {
     public GameObject correctAreaPrefab; // The rect transform of the correct area
-    private GameObject currentAreaMarker;
+    public GameObject currentAreaMarker;
     public Vector2 correctAreaLocation;
 
     public GameObject markerPrefab; // The prefab for the marker
@@ -28,21 +28,22 @@ public class TapToMark : MonoBehaviour, IPointerClickHandler
 
     private void Start() 
     {
-        foreach (RectTransform child in rectTransform.GetComponentInChildren<RectTransform>()) {
-            Destroy(child.gameObject);
-        }
         if (!isBuilder) {
+            foreach (RectTransform child in rectTransform.GetComponentInChildren<RectTransform>()) {
+                Destroy(child.gameObject);
+            }
             currentAreaMarker = Instantiate(correctAreaPrefab, rectTransform);
             currentAreaMarker.GetComponent<Image>().enabled = false;
             currentAreaMarker.transform.localPosition = correctAreaLocation;
         }
     }
 
-    public void ShowCurrentAreaMarkerEditMode()
+    public void ShowCurrentAreaMarkerEditMode(Vector2 currentTapAreaLocation)
     {
-        currentAreaMarker = Instantiate(correctAreaPrefab, rectTransform);
-        currentAreaMarker.GetComponent<Image>().enabled = false;
-        currentAreaMarker.transform.localPosition = builderManager.correctTapAreaPosition;
+        currentAreaMarker.SetActive(true);
+        currentAreaMarker.transform.localPosition = currentTapAreaLocation;
+        hasUploadedTapImage = true;
+        Debug.Log("Area square should appear" + currentTapAreaLocation);
     }
 
     public void OnPointerClick(PointerEventData eventData)
