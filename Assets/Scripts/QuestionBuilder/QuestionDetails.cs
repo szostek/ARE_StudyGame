@@ -59,16 +59,20 @@ public class QuestionDetails : MonoBehaviour
 
     public void TakePhotoButton()
     {
-        cameraManager.TakePicture(512, previewImage, 666);
-        removeImageButton.gameObject.SetActive(true);
-        hasRemovePreviewImage = false;
+        bool isValidPath = cameraManager.TakePicture(512, previewImage, 666);
+        if (isValidPath) {
+            removeImageButton.gameObject.SetActive(true);
+            hasRemovePreviewImage = false;
+        }
     }
 
     public void UploadPhotoButton()
     {
-        cameraManager.UploadPictureFromGallery(512, previewImage, 666);
-        removeImageButton.gameObject.SetActive(true);
-        hasRemovePreviewImage = false;
+        bool isValidPath = cameraManager.UploadPictureFromGallery(512, previewImage, 666);
+        if (isValidPath) {
+            removeImageButton.gameObject.SetActive(true);
+            hasRemovePreviewImage = false;
+        }
     }
 
     public void RemoveImageButton()
@@ -78,8 +82,12 @@ public class QuestionDetails : MonoBehaviour
             previewImage.sprite = null;
             removeImageButton.gameObject.SetActive(false);
             hasRemovePreviewImage = true;
-        } else {
-            Debug.Log("no file to delete");
+        } else if (builderManager.isEditMode) {
+            cameraManager.RemoveRefImage(builderManager.questionIndex);
+            builderManager.refImageFilePath = "";
+            previewImage.sprite = null;
+            removeImageButton.gameObject.SetActive(false);
+            hasRemovePreviewImage = true;
         }
     }
 
@@ -89,8 +97,8 @@ public class QuestionDetails : MonoBehaviour
         questionDetailsText.text = builderManager.questionDetailsText;
         if (!string.IsNullOrEmpty(builderManager.refImageFilePath)) {
             previewImage.sprite = cameraManager.LoadImageFromPath(builderManager.refImageFilePath);
-        }
-        // removeImageButton.gameObject.SetActive(true);
+            removeImageButton.gameObject.SetActive(true);
+        }        
         hasRemovePreviewImage = true; // Setting this to true, wont resave the path in the builder manager, just keep the old one
     }
 

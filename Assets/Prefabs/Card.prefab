@@ -1146,6 +1146,8 @@ MonoBehaviour:
   builderSaveButtonPanel: {fileID: 4291144438837104867}
   alertText: {fileID: 8107755270312799859}
   isBuilderMode: 0
+  saveButton: {fileID: 193943163223101994}
+  cancelButton: {fileID: 4511919581799344532}
   isStruggleMode: 0
 --- !u!1 &3810610293116159320
 GameObject:

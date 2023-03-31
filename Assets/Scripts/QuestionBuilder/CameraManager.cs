@@ -16,8 +16,9 @@ public class CameraManager : MonoBehaviour
         builderManager = GetComponent<QBuilderManager>();    
     }
 
-    public void TakePicture(int maxSize, Image image, int index)
+    public bool TakePicture(int maxSize, Image image, int index)
     {
+        bool isValidPath = false;
         NativeCamera.Permission permission = NativeCamera.TakePicture( ( path ) =>
         {
             if( path != null )
@@ -30,36 +31,40 @@ public class CameraManager : MonoBehaviour
                 }
                 string tempPath = Path.Combine(directory, $"image_{curQuestionNum}_{fileExt}.jpg");
                 FileInfo newFile = new FileInfo(tempPath);
-                // while (newFile.Exists) {
-                //     fileExt++;
-                //     tempPath = $"{directory}/image_{curQuestionNum}_{fileExt}.jpg";
-                //     newFile = new FileInfo(tempPath);
-                // }
                 if (newFile.Exists) {
                     File.Delete(tempPath);
+                    tempImagePaths.Remove(tempPath);
+                    Debug.Log("File was deleted and replaced.");
                 }
                 File.Copy(path, tempPath);
-                tempImagePaths.Add(tempPath);
+                if (!tempImagePaths.Contains(tempPath)) {
+                    tempImagePaths.Add(tempPath);
+                }
                 // Create a Texture2D from the captured image
                 Texture2D texture = NativeCamera.LoadImageAtPath( tempPath, maxSize );
                 if( texture == null )
                 {
                     Debug.Log( "Couldn't load texture from " + tempPath );
+                    isValidPath = false;
                     return;
                 }
                 Sprite imageSprite = Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
                 image.sprite = imageSprite;
+                isValidPath = true;
+            } else {
+                isValidPath = false;
             }
         }, maxSize );
-
         Debug.Log( "Permission result: " + permission );
+        return isValidPath;
     }
 
-    public void UploadPictureFromGallery(int maxSize, Image image, int index)
+    public bool UploadPictureFromGallery(int maxSize, Image image, int index)
     {
-        NativeGallery.Permission permission = NativeGallery.GetImageFromGallery( ( path ) =>
+        bool isValidPath = false;
+        NativeGallery.Permission permission = NativeGallery.GetImageFromGallery((path) =>
         {
-            if( path != null )
+            if(path != null)
             {
                 int curQuestionNum = builderManager.questionIndex;
                 int fileExt = index;
@@ -69,11 +74,6 @@ public class CameraManager : MonoBehaviour
                 }
                 string tempPath = Path.Combine(directory, $"image_{curQuestionNum}_{fileExt}.jpg");
                 FileInfo newFile = new FileInfo(tempPath);
-                // while (newFile.Exists) {
-                //     fileExt++;
-                //     tempPath = $"{directory}/image_{curQuestionNum}_{fileExt}.jpg";
-                //     newFile = new FileInfo(tempPath);
-                // }
                 if (newFile.Exists) {
                     File.Delete(tempPath);
                 }
@@ -84,14 +84,18 @@ public class CameraManager : MonoBehaviour
                 if( texture == null )
                 {
                     Debug.Log( "Couldn't load texture from " + tempPath );
+                    isValidPath = false;
                     return;
                 }
                 Sprite imageSprite = Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
                 image.sprite = imageSprite;
+                isValidPath = true;
+            } else {
+                isValidPath = false;
             }
         } );
-
         Debug.Log( "Permission result: " + permission );
+        return isValidPath;
     }
 
     public List<string> SavePictures()
@@ -168,10 +172,62 @@ public class CameraManager : MonoBehaviour
         return false;
     }
 
+    public void RemoveRefImage(int qIndex)
+    {
+        string folderPath = Path.Combine(Application.persistentDataPath, "CustomImages");
+        if (Directory.Exists(folderPath))
+        {
+            // Get all files in the folder
+            string[] files = Directory.GetFiles(folderPath);
+
+            // Iterate through all files
+            foreach (string file in files)
+            {
+                // Get the file name without the extension
+                string fileName = Path.GetFileNameWithoutExtension(file);
+
+                // Check if the file name contains the int value
+                if (fileName.Contains($"_{qIndex}_666"))
+                {
+                    // Delete the file
+                    File.Delete(file);
+                }
+            }
+        }
+        else
+        {
+            Debug.LogWarning("CustomImages folder not found.");
+        }
+    }
+
     public void RemoveTempTapImageIfValid()
     {
         if (string.IsNullOrEmpty(tempTapImagePath)) return;
         File.Delete(tempTapImagePath);
+    }
+
+    public void CopyAnswerImagesToTemp(int qIndex)
+    {
+        tempImagePaths.Clear();
+        string customFolder = Path.Combine(Application.persistentDataPath, "CustomImages");
+        string tempFolder = Path.Combine(Application.persistentDataPath, "TempImages");
+        if (Directory.Exists(customFolder))
+        {
+            string[] files = Directory.GetFiles(customFolder);
+            foreach (string file in files)
+            {
+                string fileName = Path.GetFileNameWithoutExtension(file);
+                if (fileName.Contains($"_{qIndex}_"))
+                {
+                    string newTempPath = Path.Combine(tempFolder, Path.GetFileName(file));
+                    if (File.Exists(newTempPath)) {
+                        File.Delete(newTempPath);
+                    }
+                    File.Copy(file, newTempPath);
+                    tempImagePaths.Add(newTempPath);
+                }
+            }
+        }
     }
 
     public void DeleteQuestionImages(int qIndex)

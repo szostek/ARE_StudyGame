@@ -13,7 +13,6 @@ public class AnswerImage : MonoBehaviour
     [HideInInspector] public int fieldId;
     [HideInInspector] public AnswerFieldList answerFieldList;
     [HideInInspector] public CameraManager cameraManager;
-    [HideInInspector] public GameManager gameManager;
 
     public void Delete()
     {
@@ -23,6 +22,7 @@ public class AnswerImage : MonoBehaviour
     public void TakePhotoButton()
     {
         cameraManager.TakePicture(512, previewImage, fieldId);
+
     }
     public void UploadPhotoButton()
     {

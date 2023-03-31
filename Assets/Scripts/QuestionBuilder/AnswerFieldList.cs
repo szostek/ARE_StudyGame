@@ -106,6 +106,10 @@ public class AnswerFieldList : MonoBehaviour
         for (int i = 0; i < amount; i++) {
             AddImageFieldItem(builderManager.isEditMode ? builderManager.imageAnswerFilePaths[i] : "");
         }
+        // If edit mode, copy all custom images into TempImages folder
+        if (builderManager.isEditMode) {
+            cameraManager.CopyAnswerImagesToTemp(builderManager.questionIndex);
+        }
         ApplyFieldIds();
         AddNewAnswerButton();
     }
@@ -123,7 +127,6 @@ public class AnswerFieldList : MonoBehaviour
         AnswerImage field = Instantiate(answerImagePrefab, answerFieldList);
         field.answerFieldList = this;
         field.cameraManager = cameraManager;
-        field.gameManager = gameManager;
         // If in edit move, load the current image for this field:
         if (!string.IsNullOrEmpty(imgPath)) {
             field.previewImage.sprite = cameraManager.LoadImageFromPath(imgPath);
@@ -184,7 +187,9 @@ public class AnswerFieldList : MonoBehaviour
             Destroy(imageFieldsList[fieldId].gameObject);
             imageFieldsList.RemoveAt(fieldId);
             if (builderManager.isEditMode) {
+                File.Delete(cameraManager.tempImagePaths[fieldId]);
                 builderManager.imageAnswerFilePaths.RemoveAt(fieldId);
+                cameraManager.tempImagePaths.RemoveAt(fieldId);
             }
         } else {
             Destroy(textFieldsList[fieldId].gameObject);
@@ -218,36 +223,28 @@ public class AnswerFieldList : MonoBehaviour
         previewCard.instructions = builderManager.instruction;
         if (hasImageAnswers) {
             correctAnswerIds = new List<int>();
-            int amount = builderManager.isEditMode ? builderManager.imageAnswerFilePaths.Count : cameraManager.tempImagePaths.Count;
-            Sprite[] images = new Sprite[amount];
-            for (int i = 0; i < amount; i++) {
-                // if (cameraManager.tempImagePaths.Count > 0) {
-                //     if (Path.GetFileName(cameraManager.tempImagePaths[i]) == Path.GetFileName(builderManager.imageAnswerFilePaths[i])) {
-                //         // If the files above have the same name, then the user has updated an image
-                //         images[i] = cameraManager.LoadImageFromPath(cameraManager.tempImagePaths[i]);
-                //         pathCounter--;
-                //     } else {
-                //         images[i] = cameraManager.LoadImageFromPath(builderManager.imageAnswerFilePaths[i]);
-                //     }
-                // } else {
-                //     images[i] = cameraManager.LoadImageFromPath(builderManager.imageAnswerFilePaths[i]);
-                // }
-                if (!builderManager.isEditMode) {
-                    images[i] = cameraManager.LoadImageFromPath(cameraManager.tempImagePaths[i]);
-                } else {
-                    if (cameraManager.tempImagePaths.Count > 0) {
-                        foreach (string path in cameraManager.tempImagePaths) {
-                            if (Path.GetFileName(path) == Path.GetFileName(builderManager.imageAnswerFilePaths[i])) {
-                                images[i] = cameraManager.LoadImageFromPath(cameraManager.tempImagePaths[i]);
-                            } else {
-                                images[i] = cameraManager.LoadImageFromPath(builderManager.imageAnswerFilePaths[i]);
-                            }
-                        }
-                    } else {
-                        images[i] = cameraManager.LoadImageFromPath(builderManager.imageAnswerFilePaths[i]);
-                    }
-                }
+            Sprite[] images = new Sprite[cameraManager.tempImagePaths.Count];
+            for (int i = 0; i < cameraManager.tempImagePaths.Count; i++) {
+                images[i] = cameraManager.LoadImageFromPath(cameraManager.tempImagePaths[i]);
             }
+            // int amount = builderManager.isEditMode ? builderManager.imageAnswerFilePaths.Count : cameraManager.tempImagePaths.Count;
+            // for (int i = 0; i < amount; i++) {
+            //     if (!builderManager.isEditMode) {
+            //         images[i] = cameraManager.LoadImageFromPath(cameraManager.tempImagePaths[i]);
+            //     } else {
+            //         if (cameraManager.tempImagePaths.Count > 0) {
+            //             foreach (string path in cameraManager.tempImagePaths) {
+            //                 if (Path.GetFileName(path) == Path.GetFileName(builderManager.imageAnswerFilePaths[i])) {
+            //                     images[i] = cameraManager.LoadImageFromPath(cameraManager.tempImagePaths[i]);
+            //                 } else {
+            //                     images[i] = cameraManager.LoadImageFromPath(builderManager.imageAnswerFilePaths[i]);
+            //                 }
+            //             }
+            //         } else {
+            //             images[i] = cameraManager.LoadImageFromPath(builderManager.imageAnswerFilePaths[i]);
+            //         }
+            //     }
+            // }
             for (int i = 0; i < imageFieldsList.Count; i++) {
                 // correctAnswerIds.Add(imageFieldsList[i].correctAnswerToggle.isOn ? 1: 0);
                 if (imageFieldsList[i].correctAnswerToggle.isOn) {

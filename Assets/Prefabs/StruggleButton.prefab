@@ -62,7 +62,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d51c303ae6681c4d88a8b0a404321ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  qIndex: 0
+  struggleList: {fileID: 0}
   buttonText: {fileID: 4434308721081799634}
+  buttonBackgroundImage: {fileID: 4434308720336006059}
 --- !u!114 &4434308720336006059
 MonoBehaviour:
   m_ObjectHideFlags: 0

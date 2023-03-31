@@ -56,6 +56,8 @@ public class MultiCardController : MonoBehaviour
     [SerializeField] TMP_Text alertText;
     private QBuilderManager builderManager;
     [HideInInspector] public bool isBuilderMode = false;
+    [SerializeField] Button saveButton;
+    [SerializeField] Button cancelButton;
 
     // Struggle Mode:
     [HideInInspector] public bool isStruggleMode = false;
@@ -358,13 +360,17 @@ public class MultiCardController : MonoBehaviour
     {
         builderManager.SaveQuestion();
         alertText.gameObject.SetActive(true);
+        saveButton.interactable = false;
+        cancelButton.interactable = false;
         StartCoroutine(HidePreviewCard());
     }
 
     IEnumerator HidePreviewCard()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1.5f);
         builderManager.HideAllBuilderMenus();
+        saveButton.interactable = true;
+        cancelButton.interactable = true;
         Destroy(gameObject);
     }
 

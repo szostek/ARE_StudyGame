@@ -52,7 +52,6 @@ public class GameManager : MonoBehaviour
         InitiateTotalQuestions();
         statusController = GetComponent<StatusController>();
         cameraManager = FindObjectOfType<CameraManager>();
-        // customQList = FindObjectOfType<CustomQList>();
     }
 
     public void StartGame()
@@ -173,10 +172,26 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // public int GetStruggleButtonColorIndex(int qIndex)
+    // {
+    //     SaveQuestionObject q = totalQuestionList[qIndex];
+    //     return q.categoryIndex;
+    // }
+
     // Called from the StruggleList when a struggle button is clicked...
     public void CreateStrugglePreviewQuestion(int qIndex) 
     {
-        SaveQuestionObject q = totalQuestionList[qIndex];
+        SaveQuestionObject q = null;
+        foreach (SaveQuestionObject obj in totalQuestionList) {
+            if (obj.questionIndex == qIndex) {
+                q = obj;
+                break;
+            }
+        }
+        if (q == null) {
+            Debug.Log("Struggle question not found..");
+            return;
+        }
         MultiCardController questionCard = Instantiate(multChoicePrefab, canvas);
         questionCard.isStruggleMode = true;
         questionCard.qIndex = q.questionIndex;

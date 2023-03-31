@@ -46,21 +46,25 @@ public class QBuilderManager : MonoBehaviour
     public void SaveQuestion()
     {
         if (hasImageAnswers) {
-            List<string> savedImagePaths = cameraManager.SavePictures();
-            if (savedImagePaths.Count > 0) {
-                if (isEditMode) {
-                    for (int i = 0; i < imageAnswerFilePaths.Count; i++) {
-                        foreach (string path in savedImagePaths) {
-                            if (Path.GetFileName(imageAnswerFilePaths[i]) == Path.GetFileName(path)) {
-                                // User has updated the image, save the current path as the new path:
-                                imageAnswerFilePaths[i] = path;
-                            }
-                        }
-                    }
-                } else {
-                    imageAnswerFilePaths = savedImagePaths;
-                }
+            if (isEditMode) {
+                cameraManager.DeleteQuestionImages(questionIndex);
             }
+            List<string> savedImagePaths = cameraManager.SavePictures();
+            // if (savedImagePaths.Count > 0) {
+            //     if (isEditMode) {
+            //         for (int i = 0; i < imageAnswerFilePaths.Count; i++) {
+            //             foreach (string path in savedImagePaths) {
+            //                 if (Path.GetFileName(imageAnswerFilePaths[i]) == Path.GetFileName(path)) {
+            //                     // User has updated the image, save the current path as the new path:
+            //                     imageAnswerFilePaths[i] = path;
+            //                 }
+            //             }
+            //         }
+            //     } else {
+            //         imageAnswerFilePaths = savedImagePaths;
+            //     }
+            // }
+            imageAnswerFilePaths = savedImagePaths;
         }
         if (!isEditMode) {
             Debug.Log("SHOULDNT SEE THIS IF YOURE IN EDIT MODE...");
@@ -116,6 +120,7 @@ public class QBuilderManager : MonoBehaviour
             alert.text = "";
         }
         cameraManager.RemoveAllTempImages();
+        cameraManager.tempImagePaths.Clear();
         cameraManager.RemoveTempTapImageIfValid();
         ResetAllInternalVars();
         isEditMode = false;
