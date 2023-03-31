@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/MainScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 0
+    path: Assets/City Adventure - beffio/Scenes/Big Map Scenes/MainMap_RotateView.unity
+    guid: 152c7c9b915d8624ebbd1d2fe9ce5f5e
   m_configObjects: {}

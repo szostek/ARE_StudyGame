@@ -59,6 +59,8 @@ public class QuestionDetails : MonoBehaviour
 
     public void TakePhotoButton()
     {
+        // This isn't working on android for some reason, further testing...
+                
         bool isValidPath = cameraManager.TakePicture(512, previewImage, 666);
         if (isValidPath) {
             removeImageButton.gameObject.SetActive(true);
