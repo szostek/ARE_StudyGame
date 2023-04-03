@@ -32,33 +32,37 @@ public class AnswerTapImage : MonoBehaviour
     public void UploadTapImage()
     {
         Image imagePreview = tapImage.GetComponent<Image>();
-        bool isValidPicture = cameraManager.TakePicture(512, imagePreview, 777);
-        if (isValidPicture) {
-            tapImage.hasUploadedTapImage = true;
-            alertText.color = Color.black;
-            alertText.text = "Great! Now tap the image to choose the target location.";
-        } else {
-            tapImage.hasUploadedTapImage = true;
-            alertText.color = Color.red;
-            alertText.text = "No image uploaded, try again.";
-            StartCoroutine(HideAlertText());
-        }
+        cameraManager.TakePicture(512, imagePreview, 777, (isValidPath) => {
+            if (isValidPath)
+            {
+                tapImage.hasUploadedTapImage = true;
+                alertText.color = Color.black;
+                alertText.text = "Great! Now tap the image to choose the target location.";
+            } else {
+                tapImage.hasUploadedTapImage = true;
+                alertText.color = Color.red;
+                alertText.text = "No image uploaded, try again.";
+                StartCoroutine(HideAlertText());
+            }
+        });
     }
 
     public void UploadTapImageFromGallery()
     {
         Image imagePreview = tapImage.GetComponent<Image>();
-        bool isValidPicture = cameraManager.UploadPictureFromGallery(512, imagePreview, 777);
-        if (isValidPicture) {
-            tapImage.hasUploadedTapImage = true;
-            alertText.color = Color.black;
-            alertText.text = "Great! Now tap the image to choose the target location.";
-        } else {
-            tapImage.hasUploadedTapImage = true;
-            alertText.color = Color.red;
-            alertText.text = "No image uploaded, try again.";
-            StartCoroutine(HideAlertText());
-        }
+        cameraManager.UploadPictureFromGallery(512, imagePreview, 777, (isValidPath) => {
+            if (isValidPath)
+            {
+                tapImage.hasUploadedTapImage = true;
+                alertText.color = Color.black;
+                alertText.text = "Great! Now tap the image to choose the target location.";
+            } else {
+                tapImage.hasUploadedTapImage = true;
+                alertText.color = Color.red;
+                alertText.text = "No image uploaded, try again.";
+                StartCoroutine(HideAlertText());
+            }
+        });
     }
 
     IEnumerator HideAlertText()

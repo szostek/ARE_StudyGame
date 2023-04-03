@@ -13,6 +13,7 @@ public class QuestionDetails : MonoBehaviour
     [SerializeField] Button nextButton;
     [SerializeField] TMP_Text imagePath;
     [SerializeField] Button removeImageButton;
+    [SerializeField] TMP_Text alertText;
 
     [Header("Next Panels:")]
     public GameObject a_textImageAnswerPanel;
@@ -59,22 +60,24 @@ public class QuestionDetails : MonoBehaviour
 
     public void TakePhotoButton()
     {
-        // This isn't working on android for some reason, further testing...
-                
-        bool isValidPath = cameraManager.TakePicture(512, previewImage, 666);
-        if (isValidPath) {
-            removeImageButton.gameObject.SetActive(true);
-            hasRemovePreviewImage = false;
-        }
+        cameraManager.TakePicture(512, previewImage, 666, (isValidPath) => {
+            if (isValidPath)
+            {
+                removeImageButton.gameObject.SetActive(true);
+                hasRemovePreviewImage = false;
+            }
+        });
     }
 
     public void UploadPhotoButton()
     {
-        bool isValidPath = cameraManager.UploadPictureFromGallery(512, previewImage, 666);
-        if (isValidPath) {
-            removeImageButton.gameObject.SetActive(true);
-            hasRemovePreviewImage = false;
-        }
+        cameraManager.UploadPictureFromGallery(512, previewImage, 666, (isValidPath) => {
+            if (isValidPath) 
+            {
+                removeImageButton.gameObject.SetActive(true);
+                hasRemovePreviewImage = false;
+            }
+        });
     }
 
     public void RemoveImageButton()

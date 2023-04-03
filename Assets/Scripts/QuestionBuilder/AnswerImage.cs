@@ -21,11 +21,11 @@ public class AnswerImage : MonoBehaviour
 
     public void TakePhotoButton()
     {
-        cameraManager.TakePicture(512, previewImage, fieldId);
+        cameraManager.TakePicture(512, previewImage, fieldId, (isValidPath) => {});
 
     }
     public void UploadPhotoButton()
     {
-        cameraManager.UploadPictureFromGallery(512, previewImage, fieldId);
+        cameraManager.UploadPictureFromGallery(512, previewImage, fieldId, (isValidPath) => {});
     }
 }

@@ -4,6 +4,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 public class CameraManager : MonoBehaviour
 {
@@ -16,9 +17,9 @@ public class CameraManager : MonoBehaviour
         builderManager = GetComponent<QBuilderManager>();    
     }
 
-    public bool TakePicture(int maxSize, Image image, int index)
+    public void TakePicture(int maxSize, Image image, int index, Action<bool> onCompleted)
     {
-        bool isValidPath = false;
+		if(NativeCamera.IsCameraBusy()) return;
         NativeCamera.Permission permission = NativeCamera.TakePicture( ( path ) =>
         {
             if( path != null )
@@ -45,23 +46,21 @@ public class CameraManager : MonoBehaviour
                 if( texture == null )
                 {
                     Debug.Log( "Couldn't load texture from " + tempPath );
-                    isValidPath = false;
+                    onCompleted(false);
                     return;
                 }
                 Sprite imageSprite = Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
                 image.sprite = imageSprite;
-                isValidPath = true;
-            } else {
-                isValidPath = false;
+                onCompleted(true);
             }
         }, maxSize );
         Debug.Log( "Permission result: " + permission );
-        return isValidPath;
+
     }
 
-    public bool UploadPictureFromGallery(int maxSize, Image image, int index)
+    public void UploadPictureFromGallery(int maxSize, Image image, int index, Action<bool> onCompleted)
     {
-        bool isValidPath = false;
+        if(NativeGallery.IsMediaPickerBusy()) return;
         NativeGallery.Permission permission = NativeGallery.GetImageFromGallery((path) =>
         {
             if(path != null)
@@ -84,18 +83,15 @@ public class CameraManager : MonoBehaviour
                 if( texture == null )
                 {
                     Debug.Log( "Couldn't load texture from " + tempPath );
-                    isValidPath = false;
+                    onCompleted(false);
                     return;
                 }
                 Sprite imageSprite = Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
                 image.sprite = imageSprite;
-                isValidPath = true;
-            } else {
-                isValidPath = false;
+                onCompleted(true);
             }
         } );
         Debug.Log( "Permission result: " + permission );
-        return isValidPath;
     }
 
     public List<string> SavePictures()

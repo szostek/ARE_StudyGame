@@ -11,6 +11,9 @@ public class TypeChooser : MonoBehaviour
     [SerializeField] Sprite[] icons;
     [SerializeField] TMP_Dropdown instructionDropdown;
 
+    // Hide upload image panel in QuestionDescription panel if type isTapOnImage:
+    [SerializeField] GameObject uploadImagePanel;
+
     private QBuilderManager builderManager;
 
     private string[] questionTypes = new string[]{
@@ -54,6 +57,11 @@ public class TypeChooser : MonoBehaviour
         builderManager.type = correctedTypes[id];
         // Instruction is temp set here, needs to be adjusted in QBuilderManager if there's only one 1 in the answer index list:
         builderManager.instruction = instructions[id];
+        if (id == 3) {
+            uploadImagePanel.SetActive(false);
+        } else {
+            uploadImagePanel.SetActive(true);
+        }
         
     }
 
