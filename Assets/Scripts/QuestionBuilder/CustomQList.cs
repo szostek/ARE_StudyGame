@@ -9,6 +9,8 @@ public class CustomQList : MonoBehaviour
     [Header("Custom Q Refs:")]
     [SerializeField] CustomQButton customQButtonPrefab;
     [SerializeField] RectTransform customQuestionList;
+    [SerializeField] TMP_Dropdown categoryFilterDropdown;
+    private int filterIndex = 0;
 
     [Header("Builder UI Refs:")]
     [SerializeField] GameObject questionDetailsPanel;
@@ -38,6 +40,11 @@ public class CustomQList : MonoBehaviour
         cameraManager = GetComponent<CameraManager>();
     }
 
+    private void Start() 
+    {
+        categoryFilterDropdown.onValueChanged.AddListener(delegate { DropdownValueChanged(categoryFilterDropdown); });
+    }
+
     // Called from gameManager when questions are loaded:
     public void PopulateCustomQs()
     {
@@ -48,13 +55,23 @@ public class CustomQList : MonoBehaviour
         if (allQuestions.Count > 0) {
             foreach (SaveQuestionObject question in allQuestions) {
                 if (question.isUserCreated) {
-                    CustomQButton item = Instantiate(customQButtonPrefab, customQuestionList);
-                    item.questionId = question.questionIndex;
-                    item.abbrevQuestionText.text = question.questionText.Length <= 32 ? question.questionText : question.questionText.Substring(0, 32) + "..";
-                    item.categoryText.text = "Category: " + categoryChooser.acronyms[question.categoryIndex];
-                    item.qIndexText.text = "Q# " + question.questionIndex;
-                    item.itemBackground.color = categoryChooser.backgroundColors[question.categoryIndex];
-                    item.customQList = this;
+                    if (filterIndex == 0) {
+                        CustomQButton item = Instantiate(customQButtonPrefab, customQuestionList);
+                        item.questionId = question.questionIndex;
+                        item.abbrevQuestionText.text = question.questionText.Length <= 32 ? question.questionText : question.questionText.Substring(0, 32) + "..";
+                        item.categoryText.text = "Category: " + categoryChooser.acronyms[question.categoryIndex];
+                        item.qIndexText.text = "Q# " + question.questionIndex;
+                        item.itemBackground.color = categoryChooser.backgroundColors[question.categoryIndex];
+                        item.customQList = this;
+                    } else if (question.categoryIndex == filterIndex - 1) {
+                        CustomQButton item = Instantiate(customQButtonPrefab, customQuestionList);
+                        item.questionId = question.questionIndex;
+                        item.abbrevQuestionText.text = question.questionText.Length <= 32 ? question.questionText : question.questionText.Substring(0, 32) + "..";
+                        item.categoryText.text = "Category: " + categoryChooser.acronyms[filterIndex - 1];
+                        item.qIndexText.text = "Q# " + question.questionIndex;
+                        item.itemBackground.color = categoryChooser.backgroundColors[filterIndex - 1];
+                        item.customQList = this;
+                    }
                 }
             }
         } else {
@@ -129,6 +146,18 @@ public class CustomQList : MonoBehaviour
         nevermindButton.interactable = true;
         alertQuestionDeletedText.gameObject.SetActive(false);
         deleteQuestionPanel.SetActive(false);
+    }
+
+    private void DropdownValueChanged(TMP_Dropdown changedDropdown)
+    {
+        if (changedDropdown.value > 0) {
+            changedDropdown.captionText.color = categoryChooser.backgroundColors[changedDropdown.value - 1];
+        } else {
+            changedDropdown.captionText.color = Color.black;
+        }
+        filterIndex = changedDropdown.value;
+        PopulateCustomQs();
+        Debug.Log(changedDropdown.value);
     }
 
 }
