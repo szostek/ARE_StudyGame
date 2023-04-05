@@ -32,6 +32,7 @@ public class MultiCardController : MonoBehaviour
     private GameManager gameManager;
     private StatusController statusController;
     private CameraManager cameraManager;
+    private UIManager uIManager;
 
     [Header("UI References:")]
     [SerializeField] TMP_Text questionText;
@@ -74,6 +75,7 @@ public class MultiCardController : MonoBehaviour
         statusController = FindObjectOfType<StatusController>();
         builderManager = FindObjectOfType<QBuilderManager>();
         cameraManager = FindObjectOfType<CameraManager>();
+        uIManager = FindObjectOfType<UIManager>();
     }
 
     private void Start() 
@@ -217,11 +219,13 @@ public class MultiCardController : MonoBehaviour
             if (success) {
                 descriptionText.text = description;
                 retryButton.gameObject.SetActive(false);
-                finishedPanel.SetActive(true);
+                uIManager.ShowFinishedPanel(finishedPanel);
+                // finishedPanel.SetActive(true);
                 correctAnimator.SetTrigger("show");
             } else {
                 descriptionText.text = "That's not quite correct.";
-                finishedPanel.SetActive(true);
+                uIManager.ShowFinishedPanel(finishedPanel);
+                // finishedPanel.SetActive(true);
                 wrongAnimator.SetTrigger("show");
             }
         } else {
@@ -229,11 +233,13 @@ public class MultiCardController : MonoBehaviour
                 if (success) {
                     descriptionText.text = description;
                     retryButton.gameObject.SetActive(false);
-                    finishedPanel.SetActive(true);
+                    uIManager.ShowFinishedPanel(finishedPanel);
+                    // finishedPanel.SetActive(true);
                     correctAnimator.SetTrigger("show");
                 } else {
                     descriptionText.text = "That's not quite correct.";
-                    finishedPanel.SetActive(true);
+                    uIManager.ShowFinishedPanel(finishedPanel);
+                    // finishedPanel.SetActive(true);
                     wrongAnimator.SetTrigger("show");
                 }
             } else {
@@ -257,7 +263,8 @@ public class MultiCardController : MonoBehaviour
 
     public void Next()
     {
-        Destroy(gameObject);
+        // Destroy(gameObject);
+        uIManager.RemoveCurrentQuestion(gameObject);
         if (!isStruggleMode) {
             gameManager.CreateQuestion();
         }

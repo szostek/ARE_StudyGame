@@ -22,6 +22,7 @@ public class QuestionDetails : MonoBehaviour
 
     private QBuilderManager builderManager;
     private CameraManager cameraManager;
+    public UIManager uIManager;
 
     private bool hasRemovePreviewImage = true;
 
@@ -50,11 +51,14 @@ public class QuestionDetails : MonoBehaviour
             }
         }
         if (builderManager.type == "isMultiChoice") {
-            a_textImageAnswerPanel.SetActive(true);
+            uIManager.ShowNextScreen(a_textImageAnswerPanel);
+            // a_textImageAnswerPanel.SetActive(true);
         } else if (builderManager.type == "isFillInBlank") {
-            b_fillInBlankPanel.SetActive(true);
+            uIManager.ShowNextScreen(b_fillInBlankPanel);
+            // b_fillInBlankPanel.SetActive(true);
         } else if (builderManager.type == "isTapOnImage") {
-            c_tapImagePanel.SetActive(true);
+            uIManager.ShowNextScreen(c_tapImagePanel);
+            // c_tapImagePanel.SetActive(true);
         }
     }
 

@@ -46,11 +46,13 @@ public class GameManager : MonoBehaviour
     private StatusController statusController;
     private CameraManager cameraManager;
     public CustomQList customQList;
+    private UIManager uIManager;
 
     private void Awake() 
     {
         InitiateTotalQuestions();
         statusController = GetComponent<StatusController>();
+        uIManager = GetComponent<UIManager>();
         cameraManager = FindObjectOfType<CameraManager>();
     }
 
@@ -229,6 +231,7 @@ public class GameManager : MonoBehaviour
         if (tempQuestionList.Count > 0) {
             SaveQuestionObject q = tempQuestionList[Random.Range(0, tempQuestionList.Count)];
             MultiCardController questionCard = Instantiate(multChoicePrefab, canvas);
+            uIManager.ShowNextScreen(questionCard.gameObject);
             questionCard.qIndex = q.questionIndex;
             questionCard.questionType = q.type;
             questionCard.question = q.questionText;
